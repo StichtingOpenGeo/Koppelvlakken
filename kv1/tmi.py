@@ -98,7 +98,7 @@ class tmi:
             elif attribute['type'] == 'D':
                 part = '%s %s'%(attribute['name'], 'DATE')
             elif attribute['type'] == 'T':
-                part = '%s %s'%(attribute['name'], 'TIME') # TODO: support 00:00:00 - 31:59:59 hour days, using timestamps
+                part = '%s %s'%(attribute['name'], 'TIMESTAMP')
             elif attribute['type'] == 'TS':
                 part = '%s %s'%(attribute['name'], 'TIMESTAMP')
 
