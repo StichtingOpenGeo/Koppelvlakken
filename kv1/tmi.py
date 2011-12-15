@@ -1,6 +1,7 @@
 import codecs
 import sys
 import os
+import zipfile
 
 from tmi_conarea import tmi_conarea
 from tmi_confinrel import tmi_confinrel
@@ -123,6 +124,19 @@ class tmi:
             self.write_part(x.lower(), self._processors[x].data)
 
 if __name__ == '__main__':
-    tmi = tmi(sys.argv[1])
-    tmi.read()
-    tmi.write()
+    if sys.argv[1].lower().endswith('.zip'):
+        if not os.path.exists ('tmp'):
+            os.makedirs('tmp')
+        zf = zipfile.ZipFile(sys.argv[1])
+        zf.extractall('tmp')
+
+        for filename in zf.namelist():
+            path = 'tmp/%s'%filename
+            t = tmi(path)
+            t.read()
+            t.write()
+
+    else:
+        t = tmi(sys.argv[1])
+        t.read()
+        t.write()
