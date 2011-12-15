@@ -14,4 +14,5 @@ class tmi_line():
         line_planning_number, line_public_number, line_name, line_ve_tag_number, description, transport_type = elements
         if line_ve_tag_number == '':
             print elements
-        self.data.append([version, implicit, data_owner_code, line_planning_number, line_public_number, line_name, line_ve_tag_number, description, transport_type])
+        else:
+            self.data.append([version, implicit, data_owner_code, line_planning_number, line_public_number, line_name, line_ve_tag_number, description, transport_type])
