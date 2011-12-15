@@ -2,4 +2,4 @@ Binnen deze repository worden de BISON Koppelvlakken uit het Nederlandse Openbaa
 
 kv1 - versie 8.1.1.0; Dienstregeling
 
-Huidige werking: python tmi.py << bestand uit KV1 levering >>
+Huidige werking: python tmi.py << bestand uit KV1 levering / ZIP-bestand >>
