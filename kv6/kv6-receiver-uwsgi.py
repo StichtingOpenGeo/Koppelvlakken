@@ -85,18 +85,5 @@ def KV6posinfo(environ, start_response):
 
     else:
         yield reply(KV6_NA % (time.strftime(ISO_TIME), "Unknown root tag, did you specify the schema?"), start_response)
-"""
-        start_response('200 OK', [('Content-Type', 'text/html')])
-        post_env = environ.copy()
-        post_env['QUERY_STRING'] = ''
-        post = cgi.FieldStorage(
-                fp=environ['wsgi.input'],
-                environ=post_env,
-                keep_blank_values=True
-        )
-
-        yield '<html><body><form method="post"><input name="something" type="text" value="isposted" /><input type="submit" name="submit" value="press me"/></form><br />POST:<pre>%s</pre><br />Environment:<pre>%s</pre></body></html>'%(str(post), str(environ).replace(',', '\n'))
-"""
-
 
 uwsgi.applications = {'':KV6posinfo}
