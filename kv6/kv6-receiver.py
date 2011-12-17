@@ -1,7 +1,7 @@
-from const import KV6_OK, KV6_SE, KV6_NOK, KV6_NA, KV6_PE, KV6_VERSION, ISO_TIME
+from const import KV6_OK, KV6_SE, KV6_NOK, KV6_NA, KV6_PE, KV6_VERSION, ISO_TIME, KV6_PSHOST
 from secret import username, password
 
-import lxml.etree as ET
+import xml.etree.cElementTree as ET
 import time
 import sys
 import web
@@ -14,12 +14,17 @@ urls = ("^/KV6posinfo$", "KV6posinfo")
 
 app = web.application(urls, globals())
 
-#xmpp = sleekxmpp.ClientXMPP(username, password)
-#xmpp.registerPlugin('xep_0060') # PubSub
-#if xmpp.connect():
-#    xmpp.process(threaded=True)
-#else:
-#    sys.exit(1)
+import logging
+logging.basicConfig(level=5, format='%(levelname)-8s %(message)s')
+
+xmpp = sleekxmpp.ClientXMPP(username, password)
+xmpp.registerPlugin('xep_0060') # PubSub
+if xmpp.connect():
+    xmpp.process(threaded=True)
+else:
+    sys.exit(1)
+
+ps = xmpp.plugin["xep_0060"]
 
 class KV6posinfo:
     def reply(self, xml):
@@ -55,19 +60,31 @@ class KV6posinfo:
 
             else:
                 for dossier in KV6posinfo:
-                    for parent in dossier.getchildren():
-                        if parent.tag == '{http://bison.connekt.nl/tmi8/kv6/core}delimiter':
+                    for child in dossier.getchildren():
+                        if child.tag == '{http://bison.connekt.nl/tmi8/kv6/core}delimiter':
                             pass
                         else:
-                            dataowner = parent.find('{http://bison.connekt.nl/tmi8/kv6/msg}dataownercode')
-                            journeynumber = parent.find('{http://bison.connekt.nl/tmi8/kv6/msg}journeynumber')
-                            reinforcementnumber = parent.find('{http://bison.connekt.nl/tmi8/kv6/msg}journeynumber')
+                            dataowner = child.find('{http://bison.connekt.nl/tmi8/kv6/msg}dataownercode')
+                            journeynumber = child.find('{http://bison.connekt.nl/tmi8/kv6/msg}journeynumber')
+                            reinforcementnumber = child.find('{http://bison.connekt.nl/tmi8/kv6/msg}journeynumber')
 
                             if dataowner is not None and journeynumber is not None and reinforcementnumber is not None:
                                 # Als je de standaard letterlijk leest zijn de volgende velden verplicht:
                                 # DataOwnerCode, LinePlanningNumber, OperatingDay, JourneyNumber, ReinforcementNumber
+                                node  = '%s/%s' % (dataowner.text, journeynumber.text)
+                                state = stripschema(child.tag)
+                                if state == 'INIT':
+                                    try:
+                                        ps.create_node(KV6_PSHOST, node)
+                                    except:
+                                        pass
+                                
+                                try:
+                                    ps.publish(KV6_PSHOST, node, id=reinforcementnumber.text, payload=child)
+                                except:
+                                    pass
 
-                                print 'node: %s/%s/%s - %s' % (dataowner.text, journeynumber.text, reinforcementnumber.text, stripschema(parent.tag))
+                                print '%s/%s|%s - %s' % (dataowner.text, journeynumber.text, reinforcementnumber.text, stripschema(child.tag))
 
                 return self.reply(KV6_OK % (time.strftime(ISO_TIME)))
 
