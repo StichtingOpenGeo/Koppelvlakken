@@ -66,7 +66,7 @@ class KV6posinfo:
                         else:
                             dataowner = child.find('{http://bison.connekt.nl/tmi8/kv6/msg}dataownercode')
                             journeynumber = child.find('{http://bison.connekt.nl/tmi8/kv6/msg}journeynumber')
-                            reinforcementnumber = child.find('{http://bison.connekt.nl/tmi8/kv6/msg}journeynumber')
+                            reinforcementnumber = child.find('{http://bison.connekt.nl/tmi8/kv6/msg}reinforcementnumber')
 
                             if dataowner is not None and journeynumber is not None and reinforcementnumber is not None:
                                 # Als je de standaard letterlijk leest zijn de volgende velden verplicht:
