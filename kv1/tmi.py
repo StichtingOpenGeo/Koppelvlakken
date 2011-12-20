@@ -112,6 +112,8 @@ class tmi:
         return output
 
     def write_part(self, table, data):
+        if not os.path.exists ('tsv'):
+            os.makedirs('tsv')
         f = codecs.open('tsv/%s.tsv'%(table), 'w', 'UTF-8')
         for line in data:
             f.write('\t'.join(line)+'\n')
