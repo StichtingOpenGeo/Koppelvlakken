@@ -11,7 +11,10 @@ from helpers import stripschema
 
 import monetdb.sql
 
-username += 'test'
+username += 'test2'
+
+logging = True
+use_KV1 = True
 
 import logging
 logging.basicConfig(level=5, format='%(levelname)-8s %(message)s')
@@ -46,17 +49,48 @@ def get_elem_text(message, needle):
         return elem
 
 def parseKV6(message, message_type, needles=[]):
-    result = [message_type]
+    result = {'messagetype': message_type}
 
     for needle in needles:
-        result.append(get_elem_text(message, needle))
+        result[needle.replace('-', '_')] = get_elem_text(message, needle)
 
-    columns = ','.join(['messagetype'] + needles).replace('-', '_')
-    stubs   = ','.join(['%s' for x in range(-1,len(needles))])
+    # Since we are receiving messages only once, we are going to do
+    # our very best to process everything in a best effort way.
+    # If a trip was never send an INIT for, we still want to store it.
+    # There are some situations where we don't need a check, this is
+    # upon a DELAY prior to an INIT. 
 
-    cursor.execute('INSERT INTO kv6 ('+ columns +') VALUES (' + stubs + ');', result)
+    columns = ', '.join(result.keys())
+    stubs   = ', '.join(['%('+x+')s' for x in result.keys()])
+
+    if logging == True:
+        cursor.execute('INSERT INTO kv6 ('+ columns +') VALUES (' + stubs + ');', result)
+
+    if message_type == 'DELAY':
+        cursor.execute('INSERT INTO kv6_current ('+ columns +') VALUES (' + stubs + ');', result)
+        return
+
+    if use_KV1 == True and message_type in ['ARRIVAL', 'ONSTOP', 'DEPARTURE']:
+        # Given that we have a good relationship with the operator, why not enhance some data?
+        # KV1 contains the positions of all userstops, we can update our current table with it.
+        result['distancesincelastuserstop'] = None
+        has_point = (cursor.execute("SELECT locationx_ew, locationy_ns FROM point WHERE pointtype = 'SP' AND pointcode = %(userstopcode)s LIMIT 1;", result) > 0)
+        if has_point == True:
+            result['rd_x'], result['rd_y'] = cursor.fetchone()
 
 
+    # For our current table, we are not storing information that comes over END. Nobody should
+    # be in such bus anymore. And actually, this information should be cleared reguarly.
+    # The reason why we can't do it instant: the protocol allows DEPARTURE to be send after END.
+    updatestubs = ', '.join([x+' = %('+x+')s' for x in result.keys()])
+    updated = (cursor.execute('UPDATE kv6_current SET ' + updatestubs + ' WHERE journeynumber = %(journeynumber)s AND reinforcementnumber = %(reinforcementnumber)s AND operatingday = %(operatingday)s AND lineplanningnumber = %(lineplanningnumber)s AND dataownercode = %(dataownercode)s AND messagetype <> \'END\';', result) > 0)
+
+    if updated == False:
+        columns = ', '.join(result.keys())
+        stubs   = ', '.join(['%('+x+')s' for x in result.keys()])
+        cursor.execute('INSERT INTO kv6_current ('+ columns +') VALUES (' + stubs + ');', result)
+
+    return
 
 def fetchfrommessage(message):
     message_type = stripschema(message.tag)
