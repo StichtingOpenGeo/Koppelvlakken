@@ -13,7 +13,7 @@ import monetdb.sql
 
 username += 'test2'
 
-logging = True
+kv6_logging = True
 use_KV1 = True
 
 import logging
@@ -63,7 +63,7 @@ def parseKV6(message, message_type, needles=[]):
     columns = ', '.join(result.keys())
     stubs   = ', '.join(['%('+x+')s' for x in result.keys()])
 
-    if logging == True:
+    if kv6_logging == True:
         cursor.execute('INSERT INTO kv6 ('+ columns +') VALUES (' + stubs + ');', result)
 
     if message_type == 'DELAY':
