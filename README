@@ -1,4 +1,4 @@
-Binnen deze repository worden de BISON Koppelvlakken uit het Nederlandse Openbaar Vervoer geimplementeerd.
+Binnen deze repository worden de BISON Koppelvlakken uit het Nederlandse Openbaar Vervoer geimplementeerd. Momenteel hebben we binnen het project openOV de beschikking over KV1 data van Arriva en Connexxion. In samenwerking met Calendar42 en Connexxion ontwikkelen we ook de KV6, KV15 en KV17 koppelvlakken voor actuele reisinformatie.
 
 kv1 - versie 8.1.1.0; Dienstregeling
 kv6 - versie 8.1.1.0; Actuele Punctualiteit
