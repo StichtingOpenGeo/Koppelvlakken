@@ -54,6 +54,13 @@ def parseKV6(message, message_type, needles=[]):
     for needle in needles:
         result[needle.replace('-', '_')] = get_elem_text(message, needle)
 
+    # After an END message, it is still possible to receive other messages,
+    # such as DEPARTURE. It is good to store that we already received the
+    # final message, and therefore may delete this row eventually.
+    if message_type == 'END':
+        result['Terminated'] = True
+
+
     # Since we are receiving messages only once, we are going to do
     # our very best to process everything in a best effort way.
     # If a trip was never send an INIT for, we still want to store it.
@@ -77,7 +84,7 @@ def parseKV6(message, message_type, needles=[]):
     # be in such bus anymore. And actually, this information should be cleared reguarly.
     # The reason why we can't do it instant: the protocol allows DEPARTURE to be send after END.
     updatestubs = ', '.join([x+' = %('+x+')s' for x in result.keys()])
-    updated = (cursor.execute('UPDATE kv6_current SET ' + updatestubs + ' WHERE journeynumber = %(journeynumber)s AND reinforcementnumber = %(reinforcementnumber)s AND operatingday = %(operatingday)s AND lineplanningnumber = %(lineplanningnumber)s AND dataownercode = %(dataownercode)s AND messagetype <> \'END\';', result) > 0)
+    updated = (cursor.execute('UPDATE kv6_current SET ' + updatestubs + ' WHERE journeynumber = %(journeynumber)s AND reinforcementnumber = %(reinforcementnumber)s AND operatingday = %(operatingday)s AND lineplanningnumber = %(lineplanningnumber)s AND dataownercode = %(dataownercode)s;', result) > 0)
 
     if updated == False:
         columns = ', '.join(result.keys())
