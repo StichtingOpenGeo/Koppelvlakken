@@ -54,12 +54,6 @@ def parseKV6(message, message_type, needles=[]):
     for needle in needles:
         result[needle.replace('-', '_')] = get_elem_text(message, needle)
 
-    # After an END message, it is still possible to receive other messages,
-    # such as DEPARTURE. It is good to store that we already received the
-    # final message, and therefore may delete this row eventually.
-    if message_type == 'END':
-        result['Terminated'] = True
-
 
     # Since we are receiving messages only once, we are going to do
     # our very best to process everything in a best effort way.
@@ -79,6 +73,11 @@ def parseKV6(message, message_type, needles=[]):
         if has_point == True:
             result['rd_x'], result['rd_y'] = cursor.fetchone()
 
+    # After an END message, it is still possible to receive other messages,
+    # such as DEPARTURE. It is good to store that we already received the
+    # final message, and therefore may delete this row eventually.
+    if message_type == 'END':
+        result['Terminated'] = True
 
     # For our current table, we are not storing information that comes over END. Nobody should
     # be in such bus anymore. And actually, this information should be cleared reguarly.
