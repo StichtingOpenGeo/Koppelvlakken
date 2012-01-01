@@ -57,18 +57,12 @@ def parseKV6(message, message_type, needles=[]):
     # Since we are receiving messages only once, we are going to do
     # our very best to process everything in a best effort way.
     # If a trip was never send an INIT for, we still want to store it.
-    # There are some situations where we don't need a check, this is
-    # upon a DELAY prior to an INIT. 
 
     columns = ', '.join(result.keys())
     stubs   = ', '.join(['%('+x+')s' for x in result.keys()])
 
     if kv6_logging == True:
         cursor.execute('INSERT INTO kv6 ('+ columns +') VALUES (' + stubs + ');', result)
-
-    if message_type == 'DELAY':
-        cursor.execute('INSERT INTO kv6_current ('+ columns +') VALUES (' + stubs + ');', result)
-        return
 
     if use_KV1 == True and message_type in ['ARRIVAL', 'ONSTOP', 'DEPARTURE']:
         # Given that we have a good relationship with the operator, why not enhance some data?
