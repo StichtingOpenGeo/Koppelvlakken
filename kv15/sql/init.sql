@@ -3,7 +3,7 @@ DataOwnerCode VARCHAR(10) NOT NULL,
 MessageCodeDate DATE NOT NULL,
 MessageCodeNumber NUMERIC(4,0) NOT NULL,
 UserStopCode TEXT,
-LinePlanningNumber VARCHAR(10),
+LinePlanningNumber TEXT,
 MessagePriority VARCHAR(10) NOT NULL,
 MessageType VARCHAR(10) NOT NULL,
 MessageDurationType VARCHAR(10) NOT NULL,
@@ -37,7 +37,6 @@ DataOwnerCode VARCHAR(10) NOT NULL,
 MessageCodeDate DATE NOT NULL,
 MessageCodeNumber NUMERIC(4,0) NOT NULL,
 UserStopCodesId BIGINT NOT NULL,
-LinePlanningNumber VARCHAR(10),
 MessagePriority VARCHAR(10) NOT NULL,
 MessageType VARCHAR(10) NOT NULL,
 MessageDurationType VARCHAR(10) NOT NULL,
@@ -64,6 +63,13 @@ MessageId BIGINT NOT NULL REFERENCES kv15_current,
 UserStopCode VARCHAR(10) NOT NULL,
 UNIQUE(MessageId, UserStopCode)
 );
+
+CREATE TABLE kv15_lineplanningnumber (
+MessageId BIGINT NOT NULL REFERENCES kv15_current,
+LinePlanningNumber VARCHAR(10) NOT NULL,
+UNIQUE(MessageId, LinePlanningNumber)
+);
+
 
 GRANT INSERT ON kv15_stopmessage TO kv15insert;
 GRANT INSERT ON kv15_deletemessage TO kv15insert;
