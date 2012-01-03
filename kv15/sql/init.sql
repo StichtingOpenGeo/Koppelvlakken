@@ -59,13 +59,13 @@ MessageTimeStamp TIMESTAMP NOT NULL
 );
 
 CREATE TABLE kv15_userstop (
-MessageId BIGINT NOT NULL REFERENCES kv15_current,
+MessageId BIGINT NOT NULL REFERENCES kv15_current ON DELETE CASCADE,
 UserStopCode VARCHAR(10) NOT NULL,
 UNIQUE(MessageId, UserStopCode)
 );
 
 CREATE TABLE kv15_lineplanningnumber (
-MessageId BIGINT NOT NULL REFERENCES kv15_current,
+MessageId BIGINT NOT NULL REFERENCES kv15_current ON DELETE CASCADE,
 LinePlanningNumber VARCHAR(10) NOT NULL,
 UNIQUE(MessageId, LinePlanningNumber)
 );
@@ -75,3 +75,4 @@ GRANT INSERT ON kv15_stopmessage TO kv15insert;
 GRANT INSERT ON kv15_deletemessage TO kv15insert;
 GRANT INSERT, UPDATE, DELETE ON kv15_current TO kv15insert;
 GRANT INSERT, DELETE ON kv15_userstop TO kv15insert;
+GRANT INSERT, DELETE ON kv15_lineplanningnumber TO kv15insert;
