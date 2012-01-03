@@ -61,7 +61,8 @@ MessageTimeStamp TIMESTAMP NOT NULL
 
 CREATE TABLE kv15_userstop (
 MessageId BIGINT NOT NULL REFERENCES kv15_current,
-UserStopCode VARCHAR(10)
+UserStopCode VARCHAR(10) NOT NULL,
+UNIQUE(MessageId, UserStopCode)
 );
 
 GRANT INSERT ON kv15_stopmessage TO kv15insert;
