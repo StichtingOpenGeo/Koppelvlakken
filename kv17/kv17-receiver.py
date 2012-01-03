@@ -31,7 +31,7 @@ cursor = connection.cursor()
 def get_elem_text(message, needle):
     ints = ['journeynumber', 'reinforcementnumber', 'reasontype', 'advicetype', 'passagesequencenumber', 'lagtime']
 
-    elem = message.find('{http://bison.connekt.nl/tmi8/kv17/msg}'+needle)
+    elem = message.find('.//{http://bison.connekt.nl/tmi8/kv17/msg}'+needle)
     if elem is not None:
         if needle in ints:
             return int(elem.text)
@@ -40,8 +40,9 @@ def get_elem_text(message, needle):
     else:
         return elem
 
-def parseKV17(message, message_type, needles=[]):
+def parseKV17(message, message_type, journey, needles=[]):
     result = {'messagetype': message_type}
+    result.update(journey)
 
     for needle in needles:
         result[needle] = get_elem_text(message, needle)
@@ -54,28 +55,40 @@ def parseKV17(message, message_type, needles=[]):
     return
 
 def fetchfrommessage(message):
-    message_type = stripschema(message.tag)
+    journey = {}
+    journey_xml = message.find('{http://bison.connekt.nl/tmi8/kv17/msg}KV17JOURNEY')
+    for needle in ['dataownercode', 'lineplanningnumber', 'operatingday', 'journeynumber', 'reinforcementnumber']:
+        journey[needle] = get_elem_text(journey_xml, needle)
+ 
+    for child in message.getchildren():
+        parent_type = stripschema(child.tag)
+        if parent_type == 'KV17MUTATEJOURNEY':
+            required = ['timestamp']
+            for subchild in child.getchildren():
+                message_type = stripschema(subchild.tag)
+                if message_type in ['RECOVER', 'ADD']:
+                    parseKV17(message, message_type, journey, required)
+                elif message_type == 'CANCEL':
+                    parseKV17(message, message_type, journey, required + ['reasontype', 'subreasontype', 'reasoncontent', 'advicetype', 'subadvicetype', 'advicecontent'])
 
-    required = ['dataownercode', 'lineplanningnumber', 'operatingday', 'journeynumber', 'reinforcementnumber', 'timestamp']
-
-    if message_type == 'CANCEL':
-        return parseKV17(message, message_type, required + ['reasontype', 'subreasontype', 'reasoncontent', 'advicetype', 'subadvicetype', 'advicecontent'])
-    elif message_type == 'MUTATIONMESSAGE':
-        return parseKV17(message, message_type, required + ['userstopcode', 'passagesequencenumber', 'reasontype', 'subreasontype', 'reasoncontent', 'advicetype', 'subadvicetype', 'advicecontent'])
-    elif message_type == 'SHORTEN':
-        return parseKV17(message, message_type, required + ['userstopcode', 'passagesequencenumber'])
-    elif message_type == 'LAG':
-        return parseKV17(message, message_type, required + ['userstopcode', 'passagesequencenumber', 'lagtime'])
-    elif message_type == 'CHANGEPASSTIMES':
-        return parseKV17(message, message_type, required + ['userstopcode', 'passagesequencenumber', 'targetarrivaltime', 'targetdeparturetime', 'journeystoptype'])
-    elif message_type == 'CHANGEDESTINATION':
-        return parseKV17(message, message_type, required + ['userstopcode', 'passagesequencenumber', 'destinationcode', 'destinationname50', 'destinationname16', 'destinationdetail16', 'destinationdisplay16'])
-    elif message_type in ['RECOVER', 'ADD']:
-        return parseKV17(message, message_type, required)
+        elif parent_type == 'KV17MUTATEJOURNEYSTOP':
+            required = ['timestamp', 'userstopcode', 'passagesequencenumber']
+            for subchild in child.getchildren():
+                message_type = stripschema(subchild.tag)
+                if message_type == 'MUTATIONMESSAGE':
+                    parseKV17(message, message_type, journey, required + ['reasontype', 'subreasontype', 'reasoncontent', 'advicetype', 'subadvicetype', 'advicecontent'])
+                elif message_type == 'SHORTEN':
+                    parseKV17(message, message_type, journey, required)
+                elif message_type == 'LAG':
+                    parseKV17(message, message_type, journey, required + ['lagtime'])
+                elif message_type == 'CHANGEPASSTIMES':
+                    parseKV17(message, message_type, journey, required + ['targetarrivaltime', 'targetdeparturetime', 'journeystoptype'])
+                elif message_type == 'CHANGEDESTINATION':
+                    parseKV17(message, message_type, journey, required + ['destinationcode', 'destinationname50', 'destinationname16', 'destinationdetail16', 'destinationdisplay16'])
 
     return False
 
-def KV17messages(environ, start_response):
+def KV17cvlinfo(environ, start_response):
     contents = environ['wsgi.input'].read()
     content_type = environ.get('CONTENT_TYPE')
     if content_type is not None and 'zip' in content_type: # should be: application/x-gzip
@@ -90,13 +103,9 @@ def KV17messages(environ, start_response):
     if xml.tag == '{http://bison.connekt.nl/tmi8/kv17/msg}VV_TM_PUSH':
         posinfo = xml.findall('{http://bison.connekt.nl/tmi8/kv17/msg}KV17cvlinfo')
         if posinfo is not None:
-            results = []
             for dossier in posinfo:
-                for child in dossier.getchildren():
-                    if child.tag == '{http://bison.connekt.nl/tmi8/kv17/core}delimiter':
-                        pass
-                    else:
-                        fetchfrommessage(child)
+                fetchfrommessage(dossier)
+            
             yield reply(KV17_OK % (time.strftime(ISO_TIME)), start_response)
             return
 
