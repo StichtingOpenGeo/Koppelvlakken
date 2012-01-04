@@ -2,8 +2,8 @@ class tmi_pool():
     def __init__(self):
         self.data = []
         self.types = [
-            {'name': 'UserStopBegin', 'aard': '#', 'type': 'A', 'length': 10 },
-            {'name': 'UserStopEnd', 'aard': '#', 'type': 'A', 'length': 10 },
+            {'name': 'UserStopCodeBegin', 'aard': '#', 'type': 'A', 'length': 10 },
+            {'name': 'UserStopCodeEnd', 'aard': '#', 'type': 'A', 'length': 10 },
             {'name': 'LinkValidFrom', 'aard': '#', 'type': 'D', 'length': 10 },
             {'name': 'PointDataOwnerCode', 'aard': '#', 'type': 'A', 'length': 10 },
             {'name': 'PointCode', 'aard': '#', 'type': 'A', 'length': 10 },
