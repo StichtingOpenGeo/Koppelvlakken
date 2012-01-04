@@ -1,0 +1,27 @@
+CREATE TABLE kv17(
+MessageType VARCHAR(17) NOT NULL,
+DataOwnerCode VARCHAR(10) NOT NULL,
+LinePlanningNumber VARCHAR(10) NOT NULL,
+OperatingDay DATE NOT NULL,
+JourneyNumber NUMERIC(6,0) NOT NULL,
+ReinforcementNumber NUMERIC(2,0) NOT NULL,
+TimeStamp TIMESTAMP NOT NULL,
+ReasonType NUMERIC(3,0),
+SubReasonType VARCHAR(10),
+ReasonContent VARCHAR(255),
+AdviceType NUMERIC(3,0),
+SubAdviceType VARCHAR(10),
+AdviceContent VARCHAR(255),
+UserStopCode VARCHAR(10),
+PassageSequenceNumber NUMERIC(4,0),
+LagTime NUMERIC(4,0),
+TargetArrivalTime TIME,
+TargetDepartureTime TIME,
+JourneyStopType VARCHAR(12),
+DestinationCode VARCHAR(10),
+DestinationName50 VARCHAR(50),
+DestinationName16 VARCHAR(16),
+DestinationDetail16 VARCHAR(16),
+DestinationDisplay16 VARCHAR(16)
+);
+grant insert on kv17 to kv17insert;
