@@ -41,4 +41,4 @@ RD_X NUMERIC(6,0),
 RD_Y NUMERIC(6,0),
 Terminated BOOLEAN
 );
-grant insert, update on kv6 to kv6insert;
+grant insert, update, delete on kv6_current to kv6insert;
