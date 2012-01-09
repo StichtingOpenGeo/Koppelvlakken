@@ -5,3 +5,7 @@ KV15
 In het volgende mooie bestand staan een hele boel enumeraties, het zou fantastisch zijn als die enumeraties van numierieke types in kv15/sql/init.sql komen te staan.
 <http://bison.connekt.nl/www/filelib/file/BISON/kv15/TMI8%20Haltegerelateerde%20vrije%20teksten%20(kv%2015),%20v8_1_0_0,%20release.zip>
 
+
+Onderzoek
+---------
+pyXSD en generateDS zijn manieren om in Python XSD documenten om te zetten naar classen. Het is duidelijk dat de code die nu beschikbaar is vooral snel code kan omzetten en niet wordt gebruikt om informatie te verwerken. Gegeven de huidige koppelvlakken is er geen specifieke noodzaak om XSDs en de validatie ervan ten volle te gebruiken, maar het zou theoretisch gezien wel sneller kunnen werken.
