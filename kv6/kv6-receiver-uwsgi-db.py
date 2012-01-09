@@ -13,9 +13,9 @@ import monetdb.sql
 
 username += 'test2'
 
-kv6_logging = True
-use_KV1 = True
-
+kv6_logging = False
+use_KV1 = False
+"""
 import logging
 logging.basicConfig(level=5, format='%(levelname)-8s %(message)s')
 
@@ -28,6 +28,7 @@ else:
 
 ps = xmpp.plugin["xep_0060"]
 
+"""
 connection = monetdb.sql.connect(username=sql_username, password=sql_password, hostname=sql_hostname, port=sql_port, database=sql_database,autocommit=True)
 cursor = connection.cursor()
 
@@ -78,6 +79,8 @@ def parseKV6(message, message_type, needles=[]):
     # final message, and therefore may delete this row eventually.
     if message_type == 'END':
         result['Terminated'] = True
+    elif message_type == 'INIT':
+    	result['Terminated'] = False
 
     # For our current table, we are not storing information that comes over END. Nobody should
     # be in such bus anymore. And actually, this information should be cleared reguarly.
