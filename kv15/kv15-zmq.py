@@ -14,7 +14,7 @@ import bson as serializer
 
 context = zmq.Context()
 sender = context.socket(zmq.PUB)
-sender.bind("tcp://*:6006")
+sender.bind("tcp://*:6015")
 
 def get_elem_list(message, needle):
     elem = message.findall('.//{http://bison.connekt.nl/tmi8/kv15/msg}'+needle)
