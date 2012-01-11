@@ -66,7 +66,7 @@ def parseKV15(message, message_type, needles=[]):
     
     elif message_type == 'STOPMESSAGE':
         userstopcodes = get_elem_list(message, 'userstopcode')
-        lineplanningnumbers = get_elem_list(message, 'lineplaninngnumber')
+        lineplanningnumbers = get_elem_list(message, 'lineplaningnumber')
 
         if kv15_logging == True:
             tmp_columns = result.keys() + ['lineplanningnumbers', 'userstopcodes']
