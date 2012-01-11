@@ -6,6 +6,7 @@ import xml.etree.cElementTree as ET
 import time
 import sys
 import zlib
+import zmq
 from helpers import stripschema, reply
 
 # import simplejson as serializer
