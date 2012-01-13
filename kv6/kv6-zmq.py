@@ -9,8 +9,8 @@ import time
 import sys
 import zlib
 import zmq
-# import simplejson as serializer
-import bson as serializer
+import simplejson as serializer
+#import bson as serializer
 
 context = zmq.Context()
 sender = context.socket(zmq.PUB)
@@ -39,12 +39,8 @@ def parseKV6(message, message_type, needles=[]):
     for needle in needles:
         result[needle.replace('-', '_')] = get_elem_text(message, needle)
 
-    sender.send(serializer.dumps(result))
-    
-    sys.stdout.write('.\n')
-    sys.stdout.flush()
+    return result
 
-    return
 
 def fetchfrommessage(message):
     message_type = stripschema(message.tag)
@@ -64,7 +60,7 @@ def fetchfrommessage(message):
     elif message_type == 'END':
         return parseKV6(message, message_type, required + ['userstopcode', 'passagesequencenumber', 'vehiclenumber'])
 
-    return False
+    return None
 
 def reply(xml, start_response):
     start_response('200 OK', [('Content-Type', 'application/xml; charset=utf-8'), ("Content-Length",str(len(xml)))])
@@ -94,10 +90,15 @@ def KV6posinfo(environ, start_response):
             results = []
             for dossier in posinfo:
                 for child in dossier.getchildren():
-                    if child.tag == '{http://bison.connekt.nl/tmi8/kv6/core}delimiter':
-                        pass
-                    else:
-                        fetchfrommessage(child)
+                    if child.tag != '{http://bison.connekt.nl/tmi8/kv6/core}delimiter':
+                        result = fetchfrommessage(child)
+                        if result is not None:
+                            results.append(result)
+
+            sender.send(serializer.dumps(results))
+            sys.stdout.write('.')
+            sys.stdout.flush()
+
             yield reply(KV6_OK % (time.strftime(ISO_TIME)), start_response)
             return
 
