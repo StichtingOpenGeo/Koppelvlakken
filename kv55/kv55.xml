@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+
+<DRIS_55>
+        <SubscriberID>openOV</SubscriberID>
+        <Version>0.0.1</Version>
+        <DossierName>KV55</DossierName>
+        <SendTimestamp>2012-01-22T23:45:49+01:00</SendTimestamp>
+        <License>http://openov.nl/license/GOVI-1.0-TravelInfo</License>
+        <Request>
+                <RequestTimestamp>2012-01-22T22:45:49</RequestTimestamp>
+                <SequenceNumber>56</SequenceNumber>
+                <TimingPoint>
+                        <TimingPointCode>031102</TimingPointCode>
+                        <Trip>
+                                <OperatingDate>2012-01-22</OperatingDate>
+                                <DataOwnerCode>GVB</DataOwnerCode>
+                                <LinePlanningNumber>69</LinePlanningNumber>
+                                <DestinationName>(69) Station Sloterdijk</DestinationName>
+                                <JourneyNumber>143</JourneyNumber>
+                                <FortifyOrderNumber>0</FortifyOrderNumber>
+                                <TargetDepartureTime>24:02:46</TargetDepartureTime>
+                                <ExpectedDepartureTime>24:02:46</ExpectedDepartureTime>
+                        </Trip>
+                        <Trip>
+                                <OperatingDate>2012-01-22</OperatingDate>
+                                <DataOwnerCode>GVB</DataOwnerCode>
+                                <LinePlanningNumber>69</LinePlanningNumber>
+                                <DestinationName>(69) Station Sloterdijk</DestinationName>
+                                <JourneyNumber>148</JourneyNumber>
+                                <FortifyOrderNumber>0</FortifyOrderNumber>
+                                <TargetDepartureTime>24:32:46</TargetDepartureTime>
+                                <ExpectedDepartureTime>24:32:46</ExpectedDepartureTime>
+                        </Trip>
+                        <Trip>
+                                <OperatingDate>2012-01-22</OperatingDate>
+                                <DataOwnerCode>GVB</DataOwnerCode>
+                                <LinePlanningNumber>69</LinePlanningNumber>
+                                <DestinationName>(69) Station Sloterdijk</DestinationName>
+                                <JourneyNumber>152</JourneyNumber>
+                                <FortifyOrderNumber>0</FortifyOrderNumber>
+                                <TargetDepartureTime>25:02:46</TargetDepartureTime>
+                                <ExpectedDepartureTime>25:02:46</ExpectedDepartureTime>
+                        </Trip>
+                        <Trip>
+                                <OperatingDate>2012-01-23</OperatingDate>
+                                <DataOwnerCode>GVB</DataOwnerCode>
+                                <LinePlanningNumber>369</LinePlanningNumber>
+                                <DestinationName>(369) Stat.Sloterdijk</DestinationName>
+                                <JourneyNumber>4</JourneyNumber>
+                                <FortifyOrderNumber>0</FortifyOrderNumber>
+                                <TargetDepartureTime>01:21:01</TargetDepartureTime>
+                                <ExpectedDepartureTime>01:21:01</ExpectedDepartureTime>
+                        </Trip>
+                        <Trip>
+                                <OperatingDate>2012-01-23</OperatingDate>
+                                <DataOwnerCode>GVB</DataOwnerCode>
+                                <LinePlanningNumber>369</LinePlanningNumber>
+                                <DestinationName>(369) Stat.Sloterdijk</DestinationName>
+                                <JourneyNumber>8</JourneyNumber>
+                                <FortifyOrderNumber>0</FortifyOrderNumber>
+                                <TargetDepartureTime>02:21:01</TargetDepartureTime>
+                                <ExpectedDepartureTime>02:21:01</ExpectedDepartureTime>
+                        </Trip>
+                </TimingPoint>
+        </Request>
+</DRIS_55>
+
