@@ -5,6 +5,7 @@ class tmi_financer():
             {'name': 'FinancerCode', 'aard': '#', 'type': 'A', 'length': 10 },
             {'name': 'Description', 'aard': '+', 'type': 'A', 'length': 255 },
             ]
+        self.references = None
 
     def parse(self, version, implicit, data_owner_code, elements):
         financer_code, description = elements

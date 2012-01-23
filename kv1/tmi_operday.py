@@ -8,6 +8,7 @@ class tmi_operday():
             {'name': 'ValidDate', 'aard': '#', 'type': 'D', 'length': 10 },
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
             ]
+        self.references = {'schedvers': ['OrganizationalUnitCode', 'ScheduleCode', 'ScheduleTypeCode']}
 
     def parse(self, version, implicit, data_owner_code, elements):
         organizational_unit_code, schedule_code, schedule_type_code, valid_date, description = elements 

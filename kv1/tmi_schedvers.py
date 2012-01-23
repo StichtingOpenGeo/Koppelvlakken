@@ -9,6 +9,7 @@ class tmi_schedvers():
             {'name': 'ValidThru', 'aard': 'o', 'type': 'D', 'length': 10 },
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
             ]
+        self.references = {'orun': ['OrganizationalUnitCode']}
 
     def parse(self, version, implicit, data_owner_code, elements):
         organizational_unit_code, schedule_code, schedule_type_code, valid_from, valid_thru, description = elements

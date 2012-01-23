@@ -6,6 +6,7 @@ class tmi_specday():
             {'name': 'Name', 'aard': '+', 'type': 'A', 'length': 50 },
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
             ]
+        self.references = None
 
     def parse(self, version, implicit, data_owner_code, elements):
         specific_day_code, name, description = elements

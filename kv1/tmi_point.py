@@ -11,6 +11,7 @@ class tmi_point():
             {'name': 'LocationZ', 'aard': 'o', 'type': 'N', 'length': 3 },
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
             ]
+        self.references = None
 
     def parse(self, version, implicit, data_owner_code, elements):
         point_code, valid_from, point_type, coordinate_system_type, location_x_ew, location_y_ns, location_z, description = elements

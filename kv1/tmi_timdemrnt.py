@@ -15,6 +15,8 @@ class tmi_timdemrnt():
             {'name': 'StopWaitTime', 'aard': '+', 'type': 'N', 'length': 5 },
             {'name': 'MinimumStopTime', 'aard': 'o', 'type': 'N', 'length': 5 },
             ]
+        self.references = {'timdemgrp': ['LinePlanningNumber', 'JourneyPatternCode', 'TimeDemandGroupCode'],
+                           'jopatili': ['LinePlanningNumber', 'JourneyPatternCode', 'TimingLinkOrder']}
 
     def parse(self, version, implicit, data_owner_code, elements):
         line_planning_number, journey_pattern_code, time_demand_group_order, timing_link_order, user_stop_code_begin, user_stop_code_end, total_drive_time, drive_time, expected_delay, lay_over_time, stop_wait_time, minimum_stop_time = elements

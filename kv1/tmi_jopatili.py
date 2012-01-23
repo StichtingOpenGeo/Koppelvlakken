@@ -14,6 +14,11 @@ class tmi_jopatili():
             {'name': 'ProductFormulaType', 'aard': 'o', 'type': 'A', 'length': 4 },
             ]
 
+        self.references = {'jopa': ['LinePlanningNumber', 'JourneyPatternCode'],
+                           'confinrel': ['ConFinRelCode'],
+                           'dest': ['DestCode'],
+                           'tili': ['UserStopCodeBegin', 'UserStopCodeEnd']}
+
     def parse(self, version, implicit, data_owner_code, elements):
         line_planning_number, journey_pattern_code, timing_link_order, user_stop_code_begin, user_stop_code_end, con_fin_rel_code, dest_code, _, is_timing_stop, display_public_line, product_formula_type = elements
         self.data.append([version, implicit, data_owner_code, line_planning_number, journey_pattern_code, timing_link_order, user_stop_code_begin, user_stop_code_end, con_fin_rel_code, dest_code, is_timing_stop, display_public_line, product_formula_type])

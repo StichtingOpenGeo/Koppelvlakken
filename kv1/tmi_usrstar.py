@@ -9,6 +9,7 @@ class tmi_usrstar():
             {'name': 'RoadSideEqUnitNumber', 'aard': 'o', 'type': 'N', 'length': 5 },
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
             ]
+        self.references = None
 
     def parse(self, version, implicit, data_owner_code, elements):
         user_stop_area_code, name, town, road_side_eq_data_owner_code, road_side_eq_unit_number, description = elements
