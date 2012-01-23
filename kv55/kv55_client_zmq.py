@@ -10,7 +10,7 @@ def KV55(environ, start_response):
         int(timingpointcode)
     except ValueError:
         reply = KV55_REP % {'timingpointcode': timingpointcode, 'error': 'Invalid TimingPointCode'}
-        start_response('504 Gateway Timeout', [('Content-Type', 'text/xml'), ('Content-length', str(len(reply)))])
+        start_response('404 File Not Found', [('Content-Type', 'text/xml'), ('Content-length', str(len(reply)))])
         yield reply
         return
 
