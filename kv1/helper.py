@@ -16,3 +16,9 @@ def wheelchair(wheel_chair_accessible):
         wheel_chair_accessible = ''
 
     return wheel_chair_accessible
+
+def boolsql(boolean):
+    if boolean:
+        return 'true'
+    else:
+        return 'false'
