@@ -4,8 +4,13 @@ kv1  - versie 8.1.1.0; Dienstregeling
 kv6  - versie 8.1.1.0; Actuele Punctualiteit
 kv15 - versie 8.1.0.0; Vrije teksten
 kv17 - versie 8.1.0.0; Mutaties op Operationeel Proces
+kv55                 ; Bus Mobiel
 
 KV1;  python tmi.py << bestand uit KV1 levering / ZIP-bestand >>
 KV6;  uwsgi --http 0.0.0.0:3006 -w kv6-receiver-uwsgi-db
 KV15; uwsgi --http 0.0.0.0:3015 -w kv15-receiver
 KV17; uwsgi --http 0.0.0.0:3017 -w kv17-receiver
+KV55; uwsgi --http 127.0.0.1:8080 -w kv55_client_zmq (ontvanger publiek)
+      uwsgi --http 127.0.0.1:8181 -w kv55_receiver_zmq (ontvanger privaat, pubsub)
+      python kv55_request_zmq.py (cache)
+      testen: curl -X POST -T kv55.xml http://127.0.0.1:8181
