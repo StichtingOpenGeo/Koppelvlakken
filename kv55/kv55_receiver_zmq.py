@@ -14,8 +14,8 @@ def KV55(environ, start_response):
     start_response('200 OK', [('Content-Type', 'text/xml'), ('Content-length', str(len(reply)))])
     
     try:
-        # response = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
-        response = environ['wsgi.input'].read()
+        response = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
+        #response = environ['wsgi.input'].read()
         root = XML(response)
         timingpointcode = root.find('.//TimingPointCode').text
 
