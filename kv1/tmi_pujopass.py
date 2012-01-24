@@ -17,6 +17,9 @@ class tmi_pujopass():
             {'name': 'WheelChairAccessible', 'aard': '+', 'type': 'B', 'length': 5 },
             {'name': 'DataOwnerIsOperator', 'aard': '+', 'type': 'B', 'length': 5 },
             ]
+        self.references = {'schedvers': ['OrganizationalUnitCode', 'ScheduleCode', 'ScheduleTypeCode'],
+                           'jopa': ['JourneyPatternCode'],
+                           'usrstop': ['UserStopCode']}
 
     def parse(self, version, implicit, data_owner_code, elements):
         organizational_unit_code, schedule_code, schedule_type_code, line_planning_number, journey_nuwber, stop_order, journey_pattern_code, user_stop_code, target_arrival_time, target_departure_time, wheel_chair_accessible, data_owner_is_operator = elements

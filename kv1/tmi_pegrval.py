@@ -7,6 +7,8 @@ class tmi_pegrval():
             {'name': 'ValidFrom', 'aard': '#', 'type': 'D', 'length': 10 },
             {'name': 'ValidThru', 'aard': '+', 'type': 'D', 'length': 10 },
             ]
+        self.references = {'orun': ['OrganizationalUnitCode'],
+                           'pegrval': ['PeriodGroupCode']}
 
     def parse(self, version, implicit, data_owner_code, elements):
         organizational_unit_code, period_group_code, valid_from, valid_thru = elements

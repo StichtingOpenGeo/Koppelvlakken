@@ -9,6 +9,7 @@ class tmi_link():
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
             {'name': 'TransportType', 'aard': '#', 'type': 'A', 'length': 5 },
             ]
+        self.references = {'tili': ['UserStopCodeBegin', 'UserStopCodeEnd']}
 
     def parse(self, version, implicit, data_owner_code, elements):
         # user_stop_code_begin, user_stop_code_end, valid_from, distance, description, transport_type = elements

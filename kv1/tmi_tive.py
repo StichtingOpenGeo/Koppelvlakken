@@ -10,6 +10,9 @@ class tmi_tive():
             {'name': 'TimetableVersionType', 'aard': '+', 'type': 'A', 'length': 10 },
             {'name': 'ValidThru', 'aard': 'o', 'type': 'D', 'length': 10 },
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 } ]
+        self.references = {'orun': ['OrganizationalUnitCode'],
+                           'specday': ['SpecificDayCode'],
+                           'pegr': ['PeriodGroupCode']}
 
     def parse(self, version, implicit, data_owner_code, elements):
         organizational_unit_code, timetable_version_code, period_group_rode, specific_day_code, valid_from, timetable_version_type, valid_thru, description = elements

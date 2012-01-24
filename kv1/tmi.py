@@ -86,9 +86,11 @@ class tmi:
         self._processors[recordtype].parse(versionnumber, implicit, data_owner_code, elements[4:])
         self.done.add(recordtype)
 
-    def type2create(self, name, types):
+    def type2create(self, name, types, references):
         output = 'CREATE TABLE %s (' % (name)
         attributes = []
+        primarykeys = []
+        foreignkeys = []
         for attribute in types:
             if attribute['type'] == 'N':
                 part = '%s %s(%d)'%(attribute['name'], 'NUMERIC', attribute['length'])
@@ -106,7 +108,21 @@ class tmi:
             if attribute['aard'] != 'o':
                 part += ' NOT NULL'
 
+            if attribute['aard'] == '#':
+                primarykeys.append(attribute['name'])
+
             attributes.append(part)
+
+        if len(primarykeys) > 0:
+            attributes.append('PRIMARY KEY (' + ', '.join(primarykeys) + ')')
+
+        if references is not None:
+            for table, keys in references.items():
+                if type(keys) == tuple:
+                    attributes.append('FOREIGN KEY (%s) REFERENCES %s(%s)' % (keys[0], table, keys[1]))
+                else:
+                    attributes.append('FOREIGN KEY (DataOwnerCode, %s) REFERENCES %s' % (', '.join(keys), table))
+
         output += ', '.join(attributes)
         output += ');'
         return output
@@ -122,7 +138,7 @@ class tmi:
 
     def write(self):
         for x in self.done:
-            print self.type2create(x.lower(), self.types + self._processors[x].types)
+            print self.type2create(x.lower(), self.types + self._processors[x].types, self._processors[x].references)
             self.write_part(x.lower(), self._processors[x].data)
 
 if __name__ == '__main__':

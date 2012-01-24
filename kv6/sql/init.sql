@@ -39,6 +39,7 @@ NumberOfCoaches NUMERIC(2,0),
 DistanceSinceLastUserStop NUMERIC(5,0),
 RD_X NUMERIC(6,0),
 RD_Y NUMERIC(6,0),
-Terminated BOOLEAN
+Terminated BOOLEAN,
+unique (DataOwnerCode, LinePlanningNumber, JourneyNumber, ReinforcementNumber)
 );
 grant insert, update, delete on kv6_current to kv6insert;

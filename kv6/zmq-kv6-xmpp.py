@@ -1,5 +1,5 @@
-# import simplejson as serializer
-import bson as serializer
+import simplejson as serializer
+# import bson as serializer
 import zmq
 import sys
 
@@ -9,7 +9,8 @@ receiver.connect("tcp://127.0.0.1:6006")
 receiver.setsockopt(zmq.SUBSCRIBE, '')
 
 while True:
-    s = serializer.loads(receiver.recv())
-    sys.stdout.write(str(s)+'\n')
-    sys.stdout.flush()
+    results = serializer.loads(receiver.recv())
+    for result in results:
+        sys.stdout.write(str(result)+'\n')
+        sys.stdout.flush()
 
