@@ -5,7 +5,6 @@
         <Version>0.0.1</Version>
         <DossierName>KV55</DossierName>
         <SendTimestamp>2012-01-22T23:45:49+01:00</SendTimestamp>
-        <License>http://openov.nl/license/GOVI-1.0-TravelInfo</License>
         <Request>
                 <RequestTimestamp>2012-01-22T22:45:49</RequestTimestamp>
                 <SequenceNumber>56</SequenceNumber>
