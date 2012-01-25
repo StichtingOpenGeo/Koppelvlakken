@@ -13,4 +13,4 @@ KV17; uwsgi --http 0.0.0.0:3017 -w kv17-receiver
 KV55; uwsgi --http 127.0.0.1:8080 -w kv55_client_zmq (ontvanger publiek)
       uwsgi --http 127.0.0.1:8181 -w kv55_receiver_zmq (ontvanger privaat, pubsub)
       python kv55_request_zmq.py (cache)
-      testen: curl -X POST -T kv55.xml http://127.0.0.1:8181
+      testen: curl -H "Expect: " -X POST -T kv55.xml http://127.0.0.1:8181
