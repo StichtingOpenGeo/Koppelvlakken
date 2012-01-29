@@ -9,7 +9,7 @@ class tmi_line():
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
             {'name': 'TransportType', 'aard': '+', 'type': 'A', 'length': 5 },
             ]
-        self.references = {'jopa': ['LinePlanningNumber'] }
+        self.references = None
 
     def parse(self, version, implicit, data_owner_code, elements):
         line_planning_number, line_public_number, line_name, line_ve_tag_number, description, transport_type = elements

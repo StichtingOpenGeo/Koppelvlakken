@@ -7,7 +7,8 @@ class tmi_link():
             {'name': 'ValidFrom', 'aard': '#', 'type': 'D', 'length': 10 },
             {'name': 'Distance', 'aard': '+', 'type': 'N', 'length': 6 },
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
-            {'name': 'TransportType', 'aard': '#', 'type': 'A', 'length': 5 },
+            #{'name': 'TransportType', 'aard': '#', 'type': 'A', 'length': 5 },
+            {'name': 'TransportType', 'aard': 'o', 'type': 'A', 'length': 5 },
             ]
         self.references = {'tili': ['UserStopCodeBegin', 'UserStopCodeEnd']}
 
