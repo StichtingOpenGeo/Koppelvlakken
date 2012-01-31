@@ -8,7 +8,7 @@ class tmi_dest():
             {'name': 'DestNameDetail', 'aard': 'o', 'type': 'A', 'length': 24 },
             {'name': 'RelevantDestNameDetail', 'aard': '+', 'type': 'B', 'length': 5 },
             ]
-        self.reference = None
+        self.references = None
 
     def parse(self, version, implicit, data_owner_code, elements):
         dest_code, dest_name_full, dest_name_mail, dest_name_detail, relevant_dest_name_detail = elements

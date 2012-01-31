@@ -8,7 +8,7 @@ class tmi_jopa():
             {'name': 'Direction', 'aard': '+', 'type': 'A', 'length': 1 },
             {'name': 'Description', 'aard': 'o', 'type': 'A', 'length': 255 },
             ]
-        self.references = None
+        self.references = {'line': ['LinePlanningNumber'] }
 
     def parse(self, version, implicit, data_owner_code, elements):
         line_planning_number, journey_pattern_code, journey_pattern_type, direction, description = elements
