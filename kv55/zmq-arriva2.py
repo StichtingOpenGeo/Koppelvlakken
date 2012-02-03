@@ -35,8 +35,11 @@ def _parse_arriva_content(request_timestamp, send_timestamp, tpc, content):
                 linename = items[0].text
                 pass
 
-            target = items[1].text
-            expected = items[2].text
+            try:
+                target = items[1].text+':00'
+                expected = items[2].text
+            except:
+                return
 
             now = int(target.split(':')[0])
             if prev > now:
@@ -45,16 +48,24 @@ def _parse_arriva_content(request_timestamp, send_timestamp, tpc, content):
             prev = now
 
             if expected == '-':
-                expected = ''
+                expected = target
+                tripstatus = 'PLANNED'
+            else:
+                expected += ':00'
+                tripstatus = 'DRIVING'
 
-            trips += KV55_TRIP % {'operdate': operdate, 'linenumber': linenumber,
-                                  'linename': linename, 'target': target, 'expected': expected}
+            trips += KV55_TRIP % {'operdate': operdate,
+                                  'linenumber': linenumber,
+                                  'linename': linename, 'target': target,
+                                  'expected': expected,
+                                  'journeynumber': 0, 'fortifyordernumber': 0,
+                                  'tripstopstatus': tripstatus }
 
         soup = None
         response = KV55_REP % \
                {'request': request_timestamp,
-                'sent': send_timestamp.strftime("%Y-%m-%dT%H:%M:%S+0200"),
-                'tpc': tpc, 'trips': trips}
+                'sent': send_timestamp.strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                'tpc': tpc, 'trips': trips, 'sequencenumber': 0 }
 
         return response.encode('UTF-8')
 
@@ -96,7 +107,7 @@ def worker(wrk_num):
             sys.stdout.flush()
 
             try:
-                request_timestamp = time.strftime("%Y-%m-%dT%H:%M:%S+0200", time.gmtime())
+                request_timestamp = time.strftime("%Y-%m-%dT%H:%M:%S+02:00", time.gmtime())
                 url = ARRIVA_REALTIME_URL % timingpointcode
                 response, content = http.request(url, 'GET', headers=headers)
             except Exception, e:
