@@ -98,6 +98,8 @@ class tmi:
                 part = '%s %s(%d)'%(attribute['name'], 'VARCHAR', attribute['length'])
             elif attribute['type'] == 'B':
                 part = '%s %s'%(attribute['name'], 'BOOLEAN')
+            elif attribute['type'] == 'S':
+                part = '%s %s'%(attribute['name'], 'SMALLINT')
             elif attribute['type'] == 'D':
                 part = '%s %s'%(attribute['name'], 'DATE')
             elif attribute['type'] == 'T':

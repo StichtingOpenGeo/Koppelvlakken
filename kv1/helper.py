@@ -22,3 +22,13 @@ def boolsql(boolean):
         return 'true'
     else:
         return 'false'
+
+def daytype2bitstring(daytype):
+    return ('7' in daytype) * 2 ** 0 + \
+           ('1' in daytype) * 2 ** 1 + \
+           ('2' in daytype) * 2 ** 2 + \
+           ('3' in daytype) * 2 ** 3 + \
+           ('4' in daytype) * 2 ** 4 + \
+           ('5' in daytype) * 2 ** 5 + \
+           ('6' in daytype) * 2 ** 6;
+
