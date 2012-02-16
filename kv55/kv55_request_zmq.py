@@ -35,7 +35,7 @@ def govi_send(timingpointcode):
         global sequencenumber
         sequencenumber += 1
 
-        xml = KV55_REQ % {'timestamp': strftime("%Y-%m-%dT%H:%M:%S", gmtime()),
+        xml = KV55_REQ % {'timestamp': strftime("%Y-%m-%dT%H:%M:%S+02:00", gmtime()),
                           'sequencenumber': sequencenumber,
                           'timingpointcode': timingpointcode}
 

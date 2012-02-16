@@ -1,7 +1,7 @@
 import zmq
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from email.utils import parsedate
 from httplib2 import Http
 from BeautifulSoup import BeautifulSoup
@@ -16,25 +16,28 @@ receiver.connect(ZMQ_ARRIVA)
 sender = context.socket(zmq.PUB)
 sender.bind(ZMQ_PUBSUB_ARRIVA)
 
-http = Http(timeout=10)
 
 class Arriva(Thread):
     def __init__ (self, timingpointcode):
         Thread.__init__(self)
+        self.http = Http(timeout=30)
         self.daemon = True
         self.timingpointcode = timingpointcode
 
     def _parse_http_datetime(self, date):
-        return datetime(*parsedate(date)[:6])
+        try:
+            return datetime(*parsedate(date)[:6])
+        except:
+            return None
 
     def _parse_arriva_content(self, request_timestamp, send_timestamp, tpc, content):
         trips = ''
         soup = BeautifulSoup(content)
-        operdate = soup.find('input', {"id": "realtime-date"})['value']
-        operdate = datetime.strptime(operdate, "%d-%m-%Y").date()
 
         realtime = soup.find('table', {"id": "realtime-table"})
         if realtime is not None:
+            operdate = soup.find('input', {"id": "realtime-date"})['value']
+            operdate = datetime.strptime(operdate, "%d-%m-%Y").date()
             prev = 0
             for row in realtime.findAll('tr')[1:]:
                 items = row.findAll('td')
@@ -45,12 +48,16 @@ class Arriva(Thread):
                     linename = items[0].text
                     pass
 
-                target = items[1].text
-                expected = items[2].text
+                try:
+                    target = items[1].text
+                    expected = items[2].text
+                except:
+                    print row
+                    continue;
 
                 now = int(target.split(':')[0])
                 if prev > now:
-                    operdate = operdate.replace(day=operdate.day + 1)
+                    operdate = operdate + timedelta(days = 1)
 
                 prev = now
 
@@ -73,16 +80,19 @@ class Arriva(Thread):
             request_timestamp = time.strftime("%Y-%m-%dT%H:%M:%S+0200", time.gmtime())
             headers = {'Connection': 'close'}
             url = ARRIVA_REALTIME_URL % self.timingpointcode
-            response, content = http.request(url, 'GET', headers=headers)
+            response, content = self.http.request(url, 'GET', headers=headers)
+            self.http = None
         except Exception, e:
             return
 
-        send_timestamp = self._parse_http_datetime(response['date'])
-        parsed = self._parse_arriva_content(request_timestamp, send_timestamp, self.timingpointcode, content)
-        if parsed is not None:
-            sender.send(self.timingpointcode+','+parsed)
-            sys.stdout.write('+')
-            sys.stdout.flush()
+        if 'date' in response:
+            send_timestamp = self._parse_http_datetime(response['date'])
+            if send_timestamp is not None:
+                parsed = self._parse_arriva_content(request_timestamp, send_timestamp, self.timingpointcode, content)
+                if parsed is not None:
+                    sender.send(self.timingpointcode+','+parsed)
+                    sys.stdout.write('+')
+                    sys.stdout.flush()
 
         return
 
