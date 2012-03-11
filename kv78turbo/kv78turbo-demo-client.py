@@ -3,15 +3,18 @@ import zmq
 
 from const import ZMQ_KV78DEMO
 
-def notfound():
+def notfound(start_response):
     start_response('404 File Not Found', [('Content-Type', 'application/json'), ('Content-length', '2')])
     yield '[]'
 
 def KV78Demo(environ, start_response):
     url = environ['PATH_INFO'][1:]
+    if url[-1] == '/':
+        url = url[:-1]
+        
     arguments = url.split('/')
     if arguments[0] not in set(['tpc', 'journey', 'line']) or len(arguments) > 2:
-         return notfound()
+         return notfound(start_response)
 
     context = zmq.Context()
     client = context.socket(zmq.REQ)
@@ -19,7 +22,7 @@ def KV78Demo(environ, start_response):
     client.send(url)
     reply = client.recv()
     if len(reply) == 0:
-        return notfound()
+        return notfound(start_response)
         
     start_response('200 OK', [('Content-Type', 'application/json'), ('Content-length', str(len(reply)))])
     return reply
