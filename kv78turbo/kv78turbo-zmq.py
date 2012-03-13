@@ -26,7 +26,7 @@ def KV78turbo(environ, start_response):
         kv7planning.send(contents)
 
     elif environ['REQUEST_URI'] == '/KV7kalender':
-        kv7kalendar.send(contents)
+        kv7kalender.send(contents)
 
     else:
         start_response('404 Not Found', [('Content-Type','text/plain')])
