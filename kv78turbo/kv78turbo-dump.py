@@ -24,24 +24,24 @@ poller.register(kv8, zmq.POLLIN)
 
 while True:
     socks = dict(poller.poll())
-    now = str(time.time())
+    now = time.time()
 
     if socks.get(kv8) == zmq.POLLIN:
-        f = open('/tmp/KV8/'+now, 'w')
+        f = open('/tmp/KV8/'+str(now), 'w')
         f.write(kv8.recv())
         f.close()
         sys.stdout.write('8')
         sys.stdout.flush()
 
     elif socks.get(kv7planning) == zmq.POLLIN:
-        f = open('/tmp/KV7planning/'+now, 'w')
+        f = open('/home/projects/openov/kv7/htdocs/KV7planning/'+str(int(now)), 'w')
         f.write(kv7planning.recv())
         f.close()
         sys.stdout.write('p')
         sys.stdout.flush()
 
     elif socks.get(kv7kalender) == zmq.POLLIN:
-        f = open('/tmp/KV7kalender/'+now, 'w')
+        f = open('/home/projects/openov/kv7/htdocs/KV7kalender/'+str(int(now)), 'w')
         f.write(kv7kalender.recv())
         f.close()
         sys.stdout.write('k')
