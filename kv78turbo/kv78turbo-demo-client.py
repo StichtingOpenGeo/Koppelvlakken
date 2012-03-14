@@ -3,13 +3,15 @@ import zmq
 
 from const import ZMQ_KV78DEMO
 
+COMMON_HEADERS = [('Content-Type', 'application/json'), ('Access-Control-Allow-Origin', '*'), ('Access-Control-Allow-Headers', 'Requested-With,Content-Type')]
+
 def notfound(start_response):
-    start_response('404 File Not Found', [('Content-Type', 'application/json'), ('Content-length', '2')])
+    start_response('404 File Not Found', COMMON_HEADERS + [('Content-length', '2')])
     yield '[]'
 
 def KV78Demo(environ, start_response):
     url = environ['PATH_INFO'][1:]
-    if url[-1] == '/':
+    if len(url) > 0 and url[-1] == '/':
         url = url[:-1]
         
     arguments = url.split('/')
@@ -24,7 +26,7 @@ def KV78Demo(environ, start_response):
     if len(reply) == 0:
         return notfound(start_response)
         
-    start_response('200 OK', [('Content-Type', 'application/json'), ('Content-length', str(len(reply)))])
+    start_response('200 OK', COMMON_HEADERS + [('Content-length', str(len(reply)))])
     return reply
 
 uwsgi.applications = {'': KV78Demo}
