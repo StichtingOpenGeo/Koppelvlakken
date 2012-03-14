@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 from pylab import *
 import matplotlib as mpl
