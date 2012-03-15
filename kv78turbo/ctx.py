@@ -38,6 +38,18 @@ class ctxtable:
             if len(result) > 0:
                 results.append(result)    
         return results
+    
+    def rowsdict(self, keys):
+        results = {}
+        for y in self.values:
+            result = {}
+            for x in range(0, len(self.fieldlabels)):
+                if y[x] is not None:
+                    result[self.fieldlabels[x]] = y[x]
+            if len(result) > 0:
+                key = '_'.join([result[x] for x in keys])
+                results[key] = result
+        return results
 
     def append(self, result):
         tmp = []
