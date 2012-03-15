@@ -1,11 +1,13 @@
 from ctx import ctx
 import codecs
+import os
 import sys
+import simplejson
 
 def KV7kalender(contents):
     c = ctx(contents)
     if 'LOCALSERVICEGROUP' in c.ctx:
-        localservicegroup = set([row['DataOwnerCode'] + '_' + row['LocalServiceLevelCode'] for row in c.ctx['LOCALSERVICEGROUP'].rows()])
+        localservicegroup = [row['DataOwnerCode'] + '_' + row['LocalServiceLevelCode'] for row in c.ctx['LOCALSERVICEGROUP'].rows()]
 
         if 'LOCALSERVICEGROUPVALIDITY' in c.ctx:
             localservicegroupvalidity = {}
@@ -13,9 +15,9 @@ def KV7kalender(contents):
                 localservicelevelcode = row['DataOwnerCode'] + '_' + row['LocalServiceLevelCode']
                 if localservicelevelcode in localservicegroup:
                     if row['OperationDate'] not in localservicegroupvalidity:
-                        localservicegroupvalidity[row['OperationDate']] = set([localservicelevelcode])
+                        localservicegroupvalidity[row['OperationDate']] = [localservicelevelcode]
                     else:
-                        localservicegroupvalidity[row['OperationDate']].add(localservicelevelcode)
+                        localservicegroupvalidity[row['OperationDate']].append(localservicelevelcode)
 
             return localservicegroupvalidity
 
@@ -55,14 +57,28 @@ def KV7planning(contents):
 
     return result
 
+def KV7planning_merge(result1, result2):
+    for key in result1.keys():
+        result1[key].update(result2[key])
+
+    for key in (set(result2.keys()) - set(result1.keys())):
+        result1[key] = result2[key]
+
+    return result1
+
+results = {}
+
+for filename in os.listdir(sys.argv[2]):
+    contents = codecs.open(sys.argv[2] + '/' + filename, 'r', 'UTF-8').read()
+    results = KV7planning_merge(results, KV7planning(contents))
 
 contents = codecs.open(sys.argv[1], 'r', 'UTF-8').read()
-localservicegroupvalidity = KV7kalender(contents)
+results['LOCALSERVICEGROUPVALIDITY'] = KV7kalender(contents)
 
-contents = codecs.open(sys.argv[2], 'r', 'UTF-8').read()
-result = KV7planning(contents)
+f = open('/tmp/kv7.json', 'w')
+f.write(simplejson.dumps(results, sort_keys=True, indent=4))
+f.close()
 
-#print localservicegroupvalidity
-#print len(result['LOCALSERVICEGROUPPASSTIME'][localservicegroupvalidity['2012-03-15'].pop()])
-#key = 'GVB_28144'
-#print result['LOCALSERVICEGROUPPASSTIME'][key]['GVB_902_2']['GVB_28144_902_284_0'][1]
+print results['LOCALSERVICEGROUPPASSTIME'].keys()
+
+print results['LOCALSERVICEGROUPPASSTIME']['GVB_28144']['GVB_902_2']['GVB_28144_902_284_0'][1]
