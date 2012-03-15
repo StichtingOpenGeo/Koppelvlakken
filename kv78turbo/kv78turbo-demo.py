@@ -46,7 +46,7 @@ def cleanup():
                 del(journey_store[journey_id])
 
 def storecurrect(row):
-    id = '_'.join([row['DataOwnerCode'], row['OperationDate'], row['LinePlanningNumber'], row['JourneyNumber']])
+    id = '_'.join([row['DataOwnerCode'], row['LocalServiceLevelCode'], row['LinePlanningNumber'], row['JourneyNumber'], row['FortifyOrderNumber']])
     line_id = row['DataOwnerCode'] + '_' + row['LinePlanningNumber'] + '_' + row['LineDirection']
 
     row['ExpectedArrivalTime'] = toisotime(row['OperationDate'], row['ExpectedArrivalTime'])
