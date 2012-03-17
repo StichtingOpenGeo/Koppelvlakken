@@ -1,8 +1,6 @@
-import uwsgi
-from gzip import GzipFile
-from cStringIO import StringIO
 import zmq
-from const import ZMQ_KV7KALENDER, ZMQ_KV7PLANNING, ZMQ_KV8
+import sys
+from const import ZMQ_KV7KALENDER, ZMQ_KV7PLANNING, ZMQ_KV8, ZMQ_KV78
 
 context = zmq.Context()
 
@@ -15,25 +13,19 @@ kv7planning.bind(ZMQ_KV7PLANNING)
 kv8 = context.socket(zmq.PUB)
 kv8.bind(ZMQ_KV8)
 
-def KV78turbo(environ, start_response):
-    contents = environ['wsgi.input'].read()
-    contents = GzipFile('','r',0,StringIO(contents)).read()
+kv78 = context.socket(zmq.PULL)
+kv78.bind(ZMQ_KV78)
 
-    if environ['REQUEST_URI'] == '/KV8':
-        kv8.send(contents)
-    
-    elif environ['REQUEST_URI'] == '/KV7planning':
-        kv7planning.send(contents)
+while True:
+    content = kv78.recv()
+    sys.stdout.write(content[0])
+    sys.stdout.flush()
 
-    elif environ['REQUEST_URI'] == '/KV7kalender':
-        kv7kalender.send(contents)
+    if content[0] == '8':
+        kv8.send(content[1:])
 
-    else:
-        start_response('404 Not Found', [('Content-Type','text/plain')])
-        return
+    elif content[0] == 'p':
+        kv7planning.send(content[1:])
 
-    start_response('200 OK', [('Content-Type','text/plain')])
-    return
-
-
-uwsgi.applications = {'':KV78turbo}
+    elif content[0] == 'k':
+        kv7kalender.send(content[1:])
