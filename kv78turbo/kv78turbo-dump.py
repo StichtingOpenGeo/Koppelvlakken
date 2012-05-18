@@ -34,14 +34,14 @@ while True:
         sys.stdout.flush()
 
     elif socks.get(kv7planning) == zmq.POLLIN:
-        f = open('/home/projects/openov/kv7/htdocs/KV7planning/'+str(int(now)), 'w')
+        f = open('/home/projects/openov/kv7/htdocs/KV7planning/'+str(now), 'w')
         f.write(kv7planning.recv())
         f.close()
         sys.stdout.write('p')
         sys.stdout.flush()
 
     elif socks.get(kv7kalender) == zmq.POLLIN:
-        f = open('/home/projects/openov/kv7/htdocs/KV7kalender/'+str(int(now)), 'w')
+        f = open('/home/projects/openov/kv7/htdocs/KV7kalender/'+str(now), 'w')
         f.write(kv7kalender.recv())
         f.close()
         sys.stdout.write('k')

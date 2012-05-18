@@ -1,9 +1,17 @@
 import sys
 import time
 import zmq
+import codecs
+import csv
 from const import ZMQ_KV8, ZMQ_KV78DEMO
 from ctx import ctx
 from datetime import datetime, timedelta
+from gzip import GzipFile
+from cStringIO import StringIO
+
+def utf_8_encoder(unicode_csv_data):
+    for line in unicode_csv_data:
+        yield line.encode('utf-8')
 
 tpc_store = {}
 line_store = {}
@@ -11,19 +19,27 @@ journey_store = {}
 
 tpc_meta = {}
 
-f = open('govi-februari-2012-wgs84.txt', 'r')
-for row in f.read().split('\n')[:-1]:
-    tpc, name, town, x, y = row.split('|')
-    tpc_meta[tpc] = {'Name': name, 'Town': town, 'X': float(x), 'Y': float(y)}
+f = codecs.open('stops.txt', 'r', 'utf-8')
+reader = csv.reader(utf_8_encoder(f))
+for row in reader:
+    try:
+        tpc, name, town, x, y = row
+        tpc_meta[tpc] = {'Name': name, 'Town': town, 'X': float(x), 'Y': float(y)}
+    except:
+        pass
 f.close()
 
-def toisotime(operationdate, timestamp):
+def toisotime(operationdate, timestamp, row):
     hours, minutes, seconds = timestamp.split(':')
     hours = int(hours)
+    if hours >= 48:
+        print row
+
     if hours >= 24:
-        hours -= 24
+        deltadays  = hours / 24
+        hours = hours % 24
         years, months, days = operationdate.split('-')
-        return (datetime(int(years), int(months), int(days), hours, int(minutes), int(seconds)) + timedelta(days = 1)).isoformat()
+        return (datetime(int(years), int(months), int(days), hours, int(minutes), int(seconds)) + timedelta(days = deltadays)).isoformat()
     else:
         return operationdate+'T'+timestamp
 
@@ -49,12 +65,12 @@ def storecurrect(row):
     id = '_'.join([row['DataOwnerCode'], row['LocalServiceLevelCode'], row['LinePlanningNumber'], row['JourneyNumber'], row['FortifyOrderNumber']])
     line_id = row['DataOwnerCode'] + '_' + row['LinePlanningNumber'] + '_' + row['LineDirection']
 
-    row['ExpectedArrivalTime'] = toisotime(row['OperationDate'], row['ExpectedArrivalTime'])
-    row['ExpectedDepartureTime'] = toisotime(row['OperationDate'], row['ExpectedDepartureTime'])
+    row['ExpectedArrivalTime'] = toisotime(row['OperationDate'], row['ExpectedArrivalTime'], row)
+    row['ExpectedDepartureTime'] = toisotime(row['OperationDate'], row['ExpectedDepartureTime'], row)
     
     try:
         for x in ['JourneyNumber', 'FortifyOrderNumber', 'UserStopOrderNumber', 'NumberOfCoaches']:
-            if x in row and row[x] != 'UNKNOWN':
+            if x in row and row[x] is not None and row[x] != 'UNKNOWN':
                 row[x] = int(row[x])
 
         row['IsTimingStop'] = (row['IsTimingStop'] == '1')
@@ -77,7 +93,7 @@ def storecurrect(row):
     else:
         journey_store[id][row['UserStopOrderNumber']] = row
 
-    if row['TripStopStatus'] in set(['ARRIVED', 'PASSED']):
+    if row['TripStopStatus'] in set(['ARRIVED', 'PASSED']): # , 'DRIVING']): Driving alleen nemen als kleinste waarde uit lijn, gegeven dat er geen ARRIVED/PASSED is
         for key in journey_store[id].keys():
             if key < row['UserStopOrderNumber']:
                 del(journey_store[id][key])
@@ -100,8 +116,12 @@ client = context.socket(zmq.REP)
 client.bind(ZMQ_KV78DEMO)
 
 kv8 = context.socket(zmq.SUB)
-kv8.connect(ZMQ_KV8)
-kv8.setsockopt(zmq.SUBSCRIBE, '')
+#kv8.connect(ZMQ_KV8)
+#kv8.setsockopt(zmq.SUBSCRIBE, '')
+
+kv8.connect("tcp://83.98.158.170:7817")
+kv8.setsockopt(zmq.SUBSCRIBE, "/GOVI/KV8")
+
 
 poller = zmq.Poller()
 poller.register(client, zmq.POLLIN)
@@ -113,7 +133,8 @@ while True:
     socks = dict(poller.poll())
     
     if socks.get(kv8) == zmq.POLLIN:
-        content = kv8.recv()
+        multipart = kv8.recv_multipart()
+        content = GzipFile('','r',0,StringIO(''.join(multipart[1:]))).read()
         c = ctx(content)
         if 'DATEDPASSTIME' in c.ctx:
             for row in c.ctx['DATEDPASSTIME'].rows():
@@ -179,6 +200,7 @@ while True:
                         if line != '':
                             reply[line] = line_store[line]
                             sys.stdout.write('L')
+                #print reply.keys()                            
                 client.send_json(reply)
                 sys.stdout.flush()
 
