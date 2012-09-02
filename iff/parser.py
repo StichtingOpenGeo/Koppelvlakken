@@ -63,6 +63,8 @@ def parse_timetables(delivery):
 		elif x[0] == '?':
 			s_arrivalplatform, s_departureplatform, footnote = x[1:].split(',')
 			current_record['platform'].append({'station': s_stationshort, 'arrival': s_arrivalplatform, 'departure': s_departureplatform, 'footnote': int(footnote)})
+			if s_arrivalplatform[0] <> s_departureplatform[0]:
+				print current_id, s_stationshort, x
 		elif x[0] == '<':
 			s_stationshort, s_arrivaltime = x[1:].split(',')
 			current_record['stop'].append({'station': s_stationshort, 'arrivaltime': parse_time(s_arrivaltime), 'departuretime': None})
@@ -112,7 +114,7 @@ def parse_transattributequestions(delivery):
 				aq[current_id] = current_record
 			q_code, q_type, q_question = x[1:].split(',')
 			current_id = q_code.strip()
-			current_record = {'attributes': [], 'type': int(q_type), 'question': q_question.strip()}
+			current_record = {'attributes': [], 'type': bool(q_type == '1'), 'question': q_question.strip()}
 		elif x[0] == '-':
 			current_record['attributes'].append(x[1:].strip())
 	
@@ -131,7 +133,7 @@ def parse_footnotes(delivery):
 		if x[0] == '#':
 			current_id = int(x[1:])
 		else:
-			footnotes[current_id] = [bool(y) for y in x]
+			footnotes[current_id] = [y == '1' for y in x]
 
 	return footnotes
 
@@ -251,4 +253,4 @@ def parse_delivery():
 
 	return {'delivery': delivery, 'companies': companies, 'countries': countries, 'transmodes': transmodes, 'transattributes': transattributes, 'timezones': timezones, 'transattributequestions': transattributequestions, 'footnotes': footnotes, 'continousconnections': continousconnections, 'connectionmodes': connectionmodes, 'changes': changes, 'timetables': timetables}
 
-parse_delivery()
+# parse_delivery()
