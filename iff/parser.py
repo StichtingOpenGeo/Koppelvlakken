@@ -76,7 +76,7 @@ def parse_timetables(delivery):
 		elif x[0] == '.':
 			s_stationshort, s_arrivaldeparturetime = x[1:].split(',')
 			s_stationshort = s_stationshort.strip()
-			both = parse_time(s_departuretime)
+			both = parse_time(s_arrivaldeparturetime)
 			current_record['stop'].append({'station': s_stationshort, 'arrivaltime': both, 'departuretime': both})
 		elif x[0] == ';':
 			s_stationshort = x[1:].split(',')
