@@ -65,7 +65,7 @@ def parse_timetables(delivery):
 			current_record['validity'].append({'footnote': int(v_footnote), 'first': int(v_firststop), 'last': int(v_laststop)})
 		elif x[0] == '&':
 			t_mode, t_firststop, t_laststop = x[1:].split(',')
-			current_record['transport'].append({'mode': t_mode.strip(), 'first': int(v_firststop), 'last': int(v_laststop)})
+			current_record['transport'].append({'mode': t_mode.strip(), 'first': int(t_firststop), 'last': int(t_laststop)})
 		elif x[0] == '*':
 			t_code, t_firststop, t_laststop, t_unknown = x[1:].split(',')
 			current_record['attribute'].append({'code': t_code.strip(), 'first': int(t_firststop), 'last': int(t_laststop), 'unknown': int(t_unknown)})
