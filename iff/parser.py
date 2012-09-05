@@ -50,11 +50,13 @@ def parse_timetables(delivery):
 	current_id = None
 	current_record = {}
 	s_stationshort = None
+	s_index = 0
 
 	for x in l_timetables:
 		if x[0] == '#':
 			if current_id is not None:
 				timetables[current_id] = current_record
+			s_index = 0
 			current_id = int(x[1:])
 			current_record = {'service': [], 'validity': [], 'transport': [], 'attribute': [], 'stop': [], 'platform': []}
 		elif x[0] == '%':
@@ -70,31 +72,36 @@ def parse_timetables(delivery):
 			t_code, t_firststop, t_laststop, t_unknown = x[1:].split(',')
 			current_record['attribute'].append({'code': t_code.strip(), 'first': int(t_firststop), 'last': int(t_laststop), 'unknown': int(t_unknown)})
 		elif x[0] == '>':
+			s_index += 1
 			s_stationshort, s_departuretime = x[1:].split(',')
 			s_stationshort = s_stationshort.strip()
-			current_record['stop'].append({'station': s_stationshort, 'arrivaltime': None, 'departuretime': parse_time(s_departuretime)})
+			current_record['stop'].append({'station': s_stationshort, 'index': s_index, 'arrivaltime': None, 'departuretime': parse_time(s_departuretime)})
 		elif x[0] == '.':
+			s_index += 1
 			s_stationshort, s_arrivaldeparturetime = x[1:].split(',')
 			s_stationshort = s_stationshort.strip()
 			both = parse_time(s_arrivaldeparturetime)
-			current_record['stop'].append({'station': s_stationshort, 'arrivaltime': both, 'departuretime': both})
+			current_record['stop'].append({'station': s_stationshort, 'index': s_index, 'arrivaltime': both, 'departuretime': both})
 		elif x[0] == ';':
+			s_index += 1
 			s_stationshort = x[1:].split(',')
 			s_stationshort = s_stationshort.strip()
-			current_record['stop'].append({'station': s_stationshort, 'arrivaltime': None, 'departuretime': None})
+			current_record['stop'].append({'station': s_stationshort, 'index': s_index, 'arrivaltime': None, 'departuretime': None})
 		elif x[0] == '+':
+			s_index += 1
 			s_stationshort, s_arrivaltime, s_departuretime = x[1:].split(',')
 			s_stationshort = s_stationshort.strip()
-			current_record['stop'].append({'station': s_stationshort, 'arrivaltime': parse_time(s_arrivaltime), 'departuretime': parse_time(s_departuretime)})
+			current_record['stop'].append({'station': s_stationshort, 'index': s_index, 'arrivaltime': parse_time(s_arrivaltime), 'departuretime': parse_time(s_departuretime)})
 		elif x[0] == '?':
 			s_arrivalplatform, s_departureplatform, footnote = x[1:].split(',')
-			current_record['platform'].append({'station': s_stationshort, 'arrival': s_arrivalplatform.strip(), 'departure': s_departureplatform.strip(), 'footnote': int(footnote)})
+			current_record['platform'].append({'index': s_index, 'arrival': s_arrivalplatform.strip(), 'departure': s_departureplatform.strip(), 'footnote': int(footnote)})
 			if s_arrivalplatform[0] <> s_departureplatform[0]:
 				print current_id, s_stationshort, x
 		elif x[0] == '<':
+			s_index += 1
 			s_stationshort, s_arrivaltime = x[1:].split(',')
 			s_stationshort = s_stationshort.strip()
-			current_record['stop'].append({'station': s_stationshort, 'arrivaltime': parse_time(s_arrivaltime), 'departuretime': None})
+			current_record['stop'].append({'station': s_stationshort, 'index': s_index, 'arrivaltime': parse_time(s_arrivaltime), 'departuretime': None})
 	
 	if current_id is not None:
 		timetables[current_id] = current_record
@@ -115,8 +122,8 @@ def sql_timetables(data):
 	a['validity'] = ['footnote', 'first', 'last']
 	a['transport'] = ['mode', 'first', 'last']
 	a['attribute'] = ['code', 'first', 'last']
-	a['stop'] = ['station', 'arrivaltime', 'departuretime']
-	a['platform'] = ['station', 'arrival', 'departure', 'footnote']
+	a['stop'] = ['index', 'station', 'arrivaltime', 'departuretime']
+	a['platform'] = ['index', 'arrival', 'departure', 'footnote']
 
 	for x in f.keys():
 		f[x].write('\t'.join(['serviceid'] + a[x]) + '\n')
