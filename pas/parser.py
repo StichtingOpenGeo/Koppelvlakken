@@ -85,4 +85,5 @@ for line in l_content[:-1]:
     if line[0] == '@':
         footnote,validity = line[1:].split(',')
         for z in range(0, len(validity)):
-            voetnootfile.write(footnote+'|'+(eerstedag + timedelta(days=z)).strftime("%Y-%m-%d")+'\n')
+            if validity[z] == '1':
+                voetnootfile.write(footnote+'|'+(eerstedag + timedelta(days=z)).strftime("%Y-%m-%d")+'\n')
