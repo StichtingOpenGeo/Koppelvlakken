@@ -41,6 +41,7 @@ insert into gtfs_route_type values ('T', 0);
 insert into gtfs_route_type values ('M', 1);
 insert into gtfs_route_type values ('B', 3);
 insert into gtfs_route_type values ('H', 3);
+insert into gtfs_route_type values ('F', 4);
 
 COPY (
 SELECT DISTINCT ON (lijnsysteemnr)
