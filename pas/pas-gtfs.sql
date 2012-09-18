@@ -1,3 +1,10 @@
+-- make sure to copy linepublicnumbers.csv to tmp
+create table linepublicnumber (lijnsysteemnr varchar(3), linepublicnumber varchar(10));
+copy linepublicnumber from '/tmp/linepublicnumbers.csv' CSV;
+
+--Delete some timingpoints that are not userstops (?)
+delete from stops where naam like '%Remise%' or naam like '%Garage%';
+
 COPY(
 SELECT
 '000024' as agency_id,
@@ -47,10 +54,10 @@ COPY (
 SELECT DISTINCT ON (lijnsysteemnr)
 lijnsysteemnr as route_id,
 vervoerdercode as agency_id,
-cast(lijnsysteemnr as integer) as route_short_name,
+linepublicnumber as route_short_name,
 NULL as route_long_name,
 route_type
-FROM pujo as p, gtfs_route_type as g
+FROM gtfs_route_type as g,  pujo as p LEFT JOIN linepublicnumber as l using (lijnsysteemnr)
 WHERE p.modaliteit = g.modaliteit
 ) TO '/tmp/routes.txt' WITH CSV HEADER;
 

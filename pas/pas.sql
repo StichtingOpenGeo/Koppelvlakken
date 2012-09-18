@@ -49,6 +49,7 @@ create table pujopass(
         halteid VARCHAR(7) NOT NULL,
         aankomsttijd CHAR(8),
         vertrektijd CHAR(8),
-        PRIMARY KEY (vervoerdercode,lijnsysteemnr,ritnummer,voetnoot,stopsequentie)
+        PRIMARY KEY (vervoerdercode,lijnsysteemnr,ritnummer,voetnoot,stopsequentie),
+	FOREIGN KEY (halteid) REFERENCES stops(halteid) ON DELETE CASCADE
 );
 copy pujopass from '/tmp/pujopass.tsv' delimiter '|' CSV HEADER;
