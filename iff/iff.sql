@@ -16,7 +16,7 @@ create table timetable_validity (serviceid integer not null, footnote integer, f
 create table timetable_transport (serviceid integer not null, transmode varchar(4) references trnsmode, firststop numeric(3,0), laststop numeric(3,0));
 create table timetable_attribute (serviceid integer not null, code varchar(4) references trnsattr, firststop numeric(3,0), laststop numeric(3,0));
 create table timetable_stop (serviceid integer, idx integer, station varchar(6) references station, arrivaltime char(8), departuretime char(8), primary key(serviceid, idx));
-create table timetable_platform (serviceid integer, idx integer, arrival varchar(4), departure varchar(4), footnote integer, primary key(serviceid, idx), foreign key (serviceid, idx) references timetable_stop);
+create table timetable_platform (serviceid integer, idx integer, station varchar(6) references station, arrival varchar(4), departure varchar(4), footnote integer, primary key(serviceid, idx), foreign key (serviceid, idx) references timetable_stop);
 create table changes(station varchar(6) references station, fromservice integer not null, toservice integer not null, possiblechange smallint);
 
 COPY country FROM '/tmp/country.tsv' USING DELIMITERS '	' CSV HEADER;

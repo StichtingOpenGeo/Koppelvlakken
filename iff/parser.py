@@ -94,7 +94,7 @@ def parse_timetables(delivery):
 			current_record['stop'].append({'station': s_stationshort, 'index': s_index, 'arrivaltime': parse_time(s_arrivaltime), 'departuretime': parse_time(s_departuretime)})
 		elif x[0] == '?':
 			s_arrivalplatform, s_departureplatform, footnote = x[1:].split(',')
-			current_record['platform'].append({'index': s_index, 'arrival': s_arrivalplatform.strip(), 'departure': s_departureplatform.strip(), 'footnote': int(footnote)})
+			current_record['platform'].append({'index': s_index,'station': s_stationshort,'arrival': s_arrivalplatform.strip(), 'departure': s_departureplatform.strip(), 'footnote': int(footnote)})
 			if s_arrivalplatform[0] <> s_departureplatform[0]:
 				print current_id, s_stationshort, x
 		elif x[0] == '<':
@@ -123,7 +123,7 @@ def sql_timetables(data):
 	a['transport'] = ['mode', 'first', 'last']
 	a['attribute'] = ['code', 'first', 'last']
 	a['stop'] = ['index', 'station', 'arrivaltime', 'departuretime']
-	a['platform'] = ['index', 'arrival', 'departure', 'footnote']
+	a['platform'] = ['index','station','arrival', 'departure', 'footnote']
 
 	for x in f.keys():
 		f[x].write('\t'.join(['serviceid'] + a[x]) + '\n')
