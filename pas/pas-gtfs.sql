@@ -3,7 +3,10 @@ create table linepublicnumber (lijnsysteemnr varchar(3), linepublicnumber varcha
 copy linepublicnumber from '/tmp/linepublicnumbers.csv' CSV;
 
 --Delete some timingpoints that are not userstops (?)
-delete from stops where naam like '%Remise%' or naam like '%Garage%';
+delete from stops where naam like '%Remise%' or naam like '%Garage%' or naam like '%Opstelspoor%';;
+
+--Correct wrong location stop
+update stops set x = 65869, y = 442059 where halteid = 'HA3914' and x = 99999;
 
 COPY(
 SELECT
