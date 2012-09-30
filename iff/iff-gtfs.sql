@@ -21,6 +21,21 @@ insert into dataownerurl values (200, 'http://www.ns-hispeed.nl');
 insert into dataownerurl values (960, 'http://www.ns-hispeed.nl');
 insert into dataownerurl values (300, 'http://www.thalys.nl');
 
+drop table gtfs_stops;
+create table gtfs_stops(
+stop_id varchar(10) primary key,
+stop_code varchar(10),
+stop_name varchar(50) not null,
+stop_lon double precision not null,
+stop_lat double precision not null,
+stop_timezone varchar(25),
+location_type integer,
+parent_station varchar(10),
+platform_code varchar(10)
+);
+
+copy gtfs_stops from '/tmp/stops.txt' CSV header;
+
 COPY(
 SELECT
 c.company as agency_id,
@@ -60,6 +75,10 @@ update station set the_geom = st_setsrid(st_makepoint(11.627778,52.130556), 4326
 
 COPY(
 SELECT
+*
+FROM gtfs_stops
+UNION
+SELECT
 shortname as stop_id,
 shortname as stop_code,
 name as stop_name,
@@ -71,8 +90,9 @@ NULL   AS parent_station,
 NULL   AS platform_code
 FROM
 (SELECT * from station where shortname in (select distinct station from timetable_stop)) as x
+where shortname not in (select stop_id from gtfs_stops)
 UNION
-SELECT
+SELECT DISTINCT
 shortname||'|'||COALESCE(departure,'0') as stop_id,
 NULL as stop_code,
 CASE WHEN (departure is not null) THEN name||' Perron '||departure ELSE name END as stop_name,
@@ -84,6 +104,7 @@ shortname   AS parent_station,
 departure   AS platform_code
 FROM
 (SELECT * from station as s,timetable_platform as p where p.station = s.shortname and shortname in (select distinct station from timetable_stop)) as x
+where shortname||'|'||COALESCE(departure,'0')  not in (select stop_id from gtfs_stops)
 UNION
 SELECT
 shortname||'|0' as stop_id,
@@ -97,6 +118,7 @@ shortname   AS parent_station,
 NULL   AS platform_code
 FROM
 (SELECT * from station as s WHERE shortname in (select distinct station from timetable_stop)) as x
+where shortname||'|0' not in (select stop_id from gtfs_stops)
 ) TO '/tmp/stops.txt' WITH CSV HEADER;
 
 COPY (

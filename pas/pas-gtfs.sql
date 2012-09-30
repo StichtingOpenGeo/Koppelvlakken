@@ -57,7 +57,7 @@ COPY (
 SELECT DISTINCT ON (lijnsysteemnr)
 lijnsysteemnr as route_id,
 vervoerdercode as agency_id,
-linepublicnumber as route_short_name,
+coalesce(linepublicnumber,lijnsysteemnr) as route_short_name,
 NULL as route_long_name,
 route_type
 FROM gtfs_route_type as g,  pujo as p LEFT JOIN linepublicnumber as l using (lijnsysteemnr)
