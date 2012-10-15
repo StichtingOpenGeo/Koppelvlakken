@@ -20,6 +20,8 @@ insert into dataownerurl values (25, 'http://www.ns.nl');
 insert into dataownerurl values (200, 'http://www.ns-hispeed.nl');
 insert into dataownerurl values (960, 'http://www.ns-hispeed.nl');
 insert into dataownerurl values (300, 'http://www.thalys.nl');
+insert into dataownerurl values (501, 'http://www.breng.nl');
+
 
 drop table gtfs_stops;
 create table gtfs_stops(
@@ -34,7 +36,7 @@ parent_station varchar(10),
 platform_code varchar(10)
 );
 
-copy gtfs_stops from '/tmp/stops.txt' CSV header;
+copy gtfs_stops from '/tmp/stops_positioned.txt' CSV header;
 
 COPY(
 SELECT
