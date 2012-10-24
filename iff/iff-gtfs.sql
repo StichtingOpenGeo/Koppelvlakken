@@ -198,3 +198,52 @@ FROM
 	) as x
 ORDER BY trip_id,stop_sequence
 ) TO '/tmp/stop_times.txt' WITH CSV HEADER;
+
+copy(
+select distinct on (p1.station,p2.station,shortname,from_stop_id,to_stop_id)
+shortname||'|'||p1.arrival as from_stop_id,
+shortname||'|'||p2.departure as to_stop_id,
+NULL as from_trip_id,
+NULL as to_trip_id,
+2 as transfer_type,
+layovertime as min_transfer_time
+from station,
+(select distinct on (p.station,p.departure,p.arrival) station,departure,arrival from timetable_platform as p) as p1,
+(select distinct on (p.station,p.departure,p.arrival) station,departure,arrival from timetable_platform as p) as p2
+WHERE 
+p1.station = shortname AND
+p2.station = shortname AND
+p1.station = p2.station AND
+p1.arrival <> p2.departure
+UNION
+SELECT
+c.station||'|'||a.arrival as from_stop_id,
+c.station||'|'||d.departure as to_stop_id,
+fromservice||'|'||from_validity.footnote||'|'||COALESCE(from_service.servicenumber,cast (from_service.variant as integer)) as from_trip_id,
+toservice||'|'||to_validity.footnote||'|'||COALESCE(to_service.servicenumber,cast (to_service.variant as integer)) as to_trip_id,
+CASE WHEN (possiblechange = 1) THEN 1 ELSE 3 END as transfer_type,
+NULL as min_transfer_time
+from 
+changes as c,
+timetable_platform as a,
+timetable_platform as d,
+timetable_service as from_service,
+timetable_service as to_service,
+timetable_validity as from_validity,
+timetable_validity as to_validity
+WHERE
+a.serviceid = fromservice AND
+d.serviceid = toservice AND
+a.station = d.station AND
+c.station = a.station AND
+from_service.serviceid = fromservice AND
+a.idx between from_service.firststop and from_service.laststop AND
+to_service.serviceid = toservice AND
+d.idx between to_service.firststop and to_service.laststop AND
+from_validity.serviceid = fromservice AND
+to_validity.serviceid = toservice AND
+from_validity.serviceid = fromservice AND
+--- no idea why this is even possible
+fromservice <> toservice AND
+a.arrival <> d.departure
+) to '/tmp/transfers.txt' WITH CSV HEADER;
