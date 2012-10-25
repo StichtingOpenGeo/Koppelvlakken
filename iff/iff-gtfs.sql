@@ -217,7 +217,7 @@ p1.station = p2.station AND
 p1.arrival <> p2.departure
 UNION
 SELECT
-c.station||'|'||a.arrival as from_stop_id,
+c.station||'|'||a.departure as from_stop_id,
 c.station||'|'||d.departure as to_stop_id,
 fromservice||'|'||from_validity.footnote||'|'||COALESCE(from_service.servicenumber,cast (from_service.variant as integer)) as from_trip_id,
 toservice||'|'||to_validity.footnote||'|'||COALESCE(to_service.servicenumber,cast (to_service.variant as integer)) as to_trip_id,
@@ -243,6 +243,8 @@ d.idx between to_service.firststop and to_service.laststop AND
 from_validity.serviceid = fromservice AND
 to_validity.serviceid = toservice AND
 from_validity.serviceid = fromservice AND
+fromservice not in (select serviceid from timetable_attribute where code = 'NIIN') AND
+toservice not in (select serviceid from timetable_attribute where code = 'NIIN') AND
 --- no idea why this is even possible
 fromservice <> toservice AND
 a.arrival <> d.departure
