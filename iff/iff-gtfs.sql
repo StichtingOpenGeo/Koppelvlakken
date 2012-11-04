@@ -147,7 +147,7 @@ footnote as service_id,
 service.serviceid||'|'||footnote||'|'||COALESCE(servicenumber,cast (variant as integer)) as trip_id,
 name as trip_headsign,
 COALESCE(servicenumber,cast (variant as integer))%2 as direction_id,
-COALESCE(servicenumber,cast (variant as integer)) as journeycode,
+COALESCE(servicenumber,cast (variant as integer)) as trip_short_name,
 service.serviceid as block_id
 FROM
 timetable_service as service,timetable_validity as validity,timetable_transport as trans, station,
