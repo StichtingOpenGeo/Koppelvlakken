@@ -70,6 +70,7 @@ SELECT
 p.lijnsysteemnr as route_id,
 voetnoot as service_id,
 voetnoot||'|'||p.ritnummer as trip_id,
+p.ritnummer as trip_short_name,
 naam as trip_headsign,
 (p.richting - 1) as direction_id,
 p.ritnummer as journeycode
