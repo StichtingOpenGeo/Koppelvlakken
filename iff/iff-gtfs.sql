@@ -21,7 +21,7 @@ insert into dataownerurl values (200, 'http://www.ns-hispeed.nl');
 insert into dataownerurl values (960, 'http://www.ns-hispeed.nl');
 insert into dataownerurl values (300, 'http://www.thalys.nl');
 insert into dataownerurl values (501, 'http://www.breng.nl');
-
+insert into dataownerurl values (52, 'http://www.breng.nl');
 
 drop table gtfs_stops;
 create table gtfs_stops(
@@ -140,6 +140,8 @@ WHERE m.code = t.transmode and t.serviceid = s.serviceid
 update timetable_service set servicenumber = 0 where servicenumber is null and variant is null;
 update timetable_transport set laststop = 999 where serviceid not in (select serviceid from timetable_transport group by serviceid having count(*) > 1);
 
+
+
 COPY(
 SELECT
 companynumber||'-'||transmode as route_id,
@@ -148,7 +150,10 @@ service.serviceid||'|'||footnote||'|'||COALESCE(servicenumber,cast (variant as i
 name as trip_headsign,
 COALESCE(servicenumber,cast (variant as integer))%2 as direction_id,
 COALESCE(servicenumber,cast (variant as integer)) as trip_short_name,
-service.serviceid as block_id
+service.serviceid as block_id,
+CASE WHEN (transmode in ('HSN','HSI')) THEN 1
+     WHEN (service.serviceid in (select serviceid from timetable_attribute where code in ('NIIN','GEFI'))) THEN 1
+     ELSE 2 END as trip_bikes_allowed
 FROM
 timetable_service as service,timetable_validity as validity,timetable_transport as trans, station,
 (select serviceid,station,row_number() over (partition by serviceid) as service_seq from timetable_stop) as stops
@@ -214,6 +219,8 @@ WHERE
 p1.station = shortname AND
 p2.station = shortname AND
 p1.station = p2.station AND
+shortname||'|'||p1.arrival in (select distinct station||'|'||arrival from timetable_platform) AND
+shortname||'|'||p2.departure in (select distinct station||'|'||departure from timetable_platform) AND
 p1.arrival <> p2.departure
 UNION
 SELECT
@@ -248,4 +255,59 @@ toservice not in (select serviceid from timetable_attribute where code = 'NIIN')
 --- no idea why this is even possible
 fromservice <> toservice AND
 a.arrival <> d.departure
+) to '/tmp/transfers.txt' WITH CSV HEADER;
+
+copy(
+SELECT DISTINCT ON (from_stop_id,to_stop_id)
+*
+FROM (
+select distinct on (p1.station,p2.station,shortname,from_stop_id,to_stop_id)
+shortname||'|'||p1.arrival as from_stop_id,
+shortname||'|'||p2.departure as to_stop_id,
+2 as transfer_type,
+layovertime as min_transfer_time
+from station,
+(select distinct on (p.station,p.departure,p.arrival) station,departure,arrival from timetable_platform as p) as p1,
+(select distinct on (p.station,p.departure,p.arrival) station,departure,arrival from timetable_platform as p) as p2
+WHERE 
+p1.station = shortname AND
+p2.station = shortname AND
+p1.station = p2.station AND
+p1.arrival <> p2.departure AND
+shortname||'|'||p1.arrival in (select distinct station||'|'||departure from timetable_platform) AND
+shortname||'|'||p2.departure in (select distinct station||'|'||departure from timetable_platform)
+UNION
+SELECT
+c.station||'|'||a.departure as from_stop_id,
+c.station||'|'||d.departure as to_stop_id,
+2 as transfer_type,
+(cast(split_part(to_stop.departuretime,':',1) as int4) * 60 * 60) + (cast(split_part(to_stop.departuretime,':',2) as int4) * 60) + (cast(split_part(to_stop.departuretime,':',3) as int4))-
+(cast(split_part(from_stop.arrivaltime,':',1) as int4) * 60 * 60) + (cast(split_part(from_stop.arrivaltime,':',2) as int4) * 60) + (cast(split_part(from_stop.arrivaltime,':',3) as int4))-20 as min_transfer_time
+from 
+changes as c,
+timetable_platform as a,
+timetable_platform as d,
+timetable_stop as from_stop,
+timetable_stop as to_stop
+WHERE
+a.serviceid = fromservice AND
+d.serviceid = toservice AND
+a.station = d.station AND
+c.station = a.station AND
+from_stop.serviceid = fromservice AND
+to_stop.serviceid = toservice AND
+from_stop.station = c.station AND
+to_stop.station = c.station AND
+fromservice not in (select serviceid from timetable_attribute where code = 'NIIN') AND
+toservice not in (select serviceid from timetable_attribute where code = 'NIIN') AND
+--- no idea why this is even possible
+fromservice <> toservice AND
+a.arrival <> d.departure AND
+possiblechange = 1 AND
+from_stop.arrivaltime is not null AND
+to_stop.departuretime is not null AND
+from_stop.arrivaltime < to_stop.departuretime 
+) as transfers
+ORDER BY
+from_stop_id,to_stop_id,min_transfer_time
 ) to '/tmp/transfers.txt' WITH CSV HEADER;
