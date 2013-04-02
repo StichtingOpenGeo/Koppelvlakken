@@ -225,10 +225,11 @@ def parse_changes(delivery):
 
 	changes = {}
 	current_id = None
-	current_records = []
+	current_records = None
 
 	for x in l_changes:
 		if x[0] == '#':
+			current_records = []
 			if current_id is not None:
 				changes[current_id] = current_records
 			current_id = x[1:].strip()
