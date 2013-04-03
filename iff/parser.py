@@ -229,13 +229,11 @@ def parse_changes(delivery):
 
 	for x in l_changes:
 		if x[0] == '#':
-			current_records = []
-			if current_id is not None:
-				changes[current_id] = current_records
 			current_id = x[1:].strip()
+                        changes[current_id] = []
 		else:
 			c_from, c_to, c_change = [y for y in x[1:].split(',')]
-			current_records.append({'from': int(c_from), 'to': int(c_to), 'change': c_change})
+			changes[current_id].append({'from': int(c_from), 'to': int(c_to), 'change': c_change})
 
 	return changes
 
