@@ -12,6 +12,7 @@ context = zmq.Context()
 sub = context.socket(zmq.SUB)
 sub.connect(sys.argv[1])
 sub.setsockopt(zmq.SUBSCRIBE, '')
+sub.setsockopt(zmq.HWM, 255)
 
 host,port = sys.argv[2].split(':')
 pool = HTTPConnectionPool(host,port=int(port),maxsize=4)
